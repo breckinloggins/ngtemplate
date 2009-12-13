@@ -1,7 +1,0 @@
-libuseful - A collection of (mostly) useful data structures, algorithms, and utilities, including:
-
-- hash table
-- linked list
-- string builder
-- test harness utility
-
