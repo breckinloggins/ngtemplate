@@ -1,19 +1,19 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-PROJECT(cxtemplate)
+PROJECT(ngtemplate)
 
 SUBDIRS(../lib/libuseful/src)
 
-SET(cxtemplate_LIB_SRCS
+SET(ngtemplate_LIB_SRCS
 	template.c
 )
 
-ADD_LIBRARY(cxtemplate STATIC ${cxtemplate_LIB_SRCS})
-TARGET_LINK_LIBRARIES(cxtemplate useful)
+ADD_LIBRARY(ngtemplate STATIC ${ngtemplate_LIB_SRCS})
+TARGET_LINK_LIBRARIES(ngtemplate useful)
 
 ENABLE_TESTING()
 
 ADD_EXECUTABLE(template_test testing/template_test.c)
-TARGET_LINK_LIBRARIES(template_test useful cxtemplate)
+TARGET_LINK_LIBRARIES(template_test useful ngtemplate)
 
 MACRO(ADD_TEMPLATE_TEST NUMBER)
 	ADD_TEST(

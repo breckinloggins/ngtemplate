@@ -1,4 +1,4 @@
-TEMPLATE is a small, fast template engine written in C.  It aims to be fully syntax-compatible with Google's CTemplate.  In addition, the TEMPLATE API is designed to closely mirror the CTemplate API.
+ngtemplate is a small, fast template engine written in C.  It aims to be fully syntax-compatible with Google's CTemplate.  In addition, the TEMPLATE API is designed to closely mirror the CTemplate API.
 
 Differences from CTemplate:
 	- Unlike in CTemplate, you can have as many FOO_separator sections as you like inside a template and they will all be expanded in the order in which the separators are placed

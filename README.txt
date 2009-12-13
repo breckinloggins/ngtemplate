@@ -1,13 +1,13 @@
-cxtemplate - A template engine written in C designed to be (mostly) syntax-compatible with Google CTemplate
+ngtemplate - A template engine written in C designed to be (mostly) syntax-compatible with Google CTemplate
 
 Version 0.1-ish, so there's plenty more work to do. 
 
 Introduction
 ------------
 
-cxtemplate is a small, fast template engine written in C.  Like Google's CTemplate, it
+ngtemplate is a small, fast template engine written in C.  Like Google's CTemplate, it
 strives to be as simple as possible to shield developers from the temptation of embedding
-logic inside their templates.  An example of a cxtemplate would be:
+logic inside their templates.  An example of an ngtemplate would be:
 
 Hello, {{Name}}.  You have read {{NumPosts}} posts on our blog today.  Thank you for visiting!
 
@@ -30,7 +30,7 @@ depending on their type and the contents of the template dictionary.
 Variable Markers
 ----------------
 
-Markers that look like {{This}} are variable markers.  When cxtemplate encounters a variable
+Markers that look like {{This}} are variable markers.  When ngtemplate encounters a variable
 marker, it will look up the marker in the data dictionary.  If it finds a match, the marker
 will be replaced by the text in the dictionary.  If the marker cannot be found in the dictionary, 
 the marker will be erased from the output.
@@ -97,7 +97,7 @@ The output of the template would be:
 RedYellowBlueBlackGray
 
 But that's not what you want!  You'd like a comma and a space after all but the last color.
-Fortunately, cxtemplate understands separators:
+Fortunately, ngtemplate understands separators:
 
 {{#Colors}}{{Color}}{{#Colors_separator}}, {{/Colors_separator}}{{/Colors}}
 
