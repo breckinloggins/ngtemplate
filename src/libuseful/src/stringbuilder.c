@@ -12,7 +12,7 @@
  * 
  */
 stringbuilder* sb_new()	{
-	return sb_new_with_size(1024);
+	return sb_new_with_size(1024);		// TODO: Is there a heuristic we could use?
 }
 
 /**
