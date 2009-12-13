@@ -1,0 +1,13 @@
+-----------------------------------------------
+Name:	{{Name}}
+Age:	{{Age}}
+	{{#Person_Favorites}}
+	Favorite Color = {{Color}}
+	Favorite Band = {{Band}}
+	Favorite Sport = {{Sport}}
+	{{/Person_Favorites}}
+	
+	{{>Callback_Template}}
+	
+	{{Quote}}
+-----------------------------------------------

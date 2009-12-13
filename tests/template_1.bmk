@@ -1,0 +1,10 @@
+Foo=Bar
+This=That
+
+! 
+
+
+
+1) The comment you saw above should be stripped out
+2) That Tags like That still work
+

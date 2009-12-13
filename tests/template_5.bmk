@@ -1,0 +1,43 @@
+People={
+	Person=Bob
+}{
+	Person=Mary
+}{
+	Person=Sue
+}{
+	Person=Terry
+}
+Animals={
+	Animal=Dog
+	Number=1
+}{
+	Animal=Cat
+	Number=2
+}{
+	Animal=Bird
+	Number=3
+}{
+	Animal=Lion
+	Number=4
+}{
+	Animal=Tiger
+	Number=5
+}
+MuscleCars={
+	Make=Ford
+	Model=Mustang
+}{
+	Make=Chevy
+	Model=Camaro
+}{
+	Make=Dodge
+	Model=Charger
+}
+!
+People: Bob, Mary, Sue, Terry
+
+Animals: (1) Dog 1=> (2) Cat 2=> (3) Bird 3=> (4) Lion 4=> (5) Tiger
+
+
+Muscle Cars: /Ford Mustang//Chevy Camaro/Dodge Charger
+

@@ -1,0 +1,71 @@
+Foo=Bar
+Callback_Template={
+	Key=This is a key
+	One=One
+}
+Filename_Template={
+	Name=John
+	Age=21
+	Quote="Yay, I can finally drink beer!"
+}
+Person_Favorites={
+	Color=Black
+	Band=Pearl Jam
+	Sport=Football
+}
+!
+This template tests include sections
+
+
+Nothing should be between these arrows ---><---
+
+
+This is a template section.  Key = This is a key and One = One
+
+	Here's another line of the section
+
+
+Just to make sure: Foo = Bar <--- should be "Foo = Bar"
+
+
+A person:
+-----------------------------------------------
+Name:	John
+Age:	21
+	
+	Favorite Color = Black
+	Favorite Band = Pearl Jam
+	Favorite Sport = Football
+	
+	
+	This is a template section.  Key = This is a key and One = One
+	
+		Here's another line of the section
+	
+	
+	"Yay, I can finally drink beer!"
+-----------------------------------------------
+
+Again, but should be indented:
+	-----------------------------------------------
+	Name:	John
+	Age:	21
+		
+		Favorite Color = Black
+		Favorite Band = Pearl Jam
+		Favorite Sport = Football
+		
+		
+		This is a template section.  Key = This is a key and One = One
+		
+			Here's another line of the section
+		
+		
+		"Yay, I can finally drink beer!"
+	-----------------------------------------------
+
+
+
+Just to make sure again: Foo = Bar <--- should be "Foo = Bar"
+Done.
+
