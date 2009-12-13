@@ -1,43 +1,47 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-PROJECT (cbnf)
+PROJECT(cxtemplate)
 
-ADD_SUBDIRECTORY(useful)
-ADD_SUBDIRECTORY(cxtemplate)
+SUBDIRS(libuseful/src)
 
-FIND_PROGRAM(DiffFound diff)
-IF(DiffFound STREQUAL "DiffFound-NOTFOUND")
-	MESSAGE(FATAL_ERROR "The diff tool is not found on your system.  This is required for testing!")
-ENDIF(DiffFound STREQUAL "DiffFound-NOTFOUND")
-
-SET (CBNF_SRCS 
-	main.c 
-	cbnf.c 
-	scanner.c 
-	parser.c 
-	analyzer.c 
-	ast.c
+SET(cxtemplate_LIB_SRCS
+	template.c
 )
 
-SET (CMAKE_BUILD_TYPE Debug)
-
-ADD_EXECUTABLE(cbnf ${CBNF_SRCS})
-TARGET_LINK_LIBRARIES(cbnf useful)
+ADD_LIBRARY(cxtemplate STATIC ${cxtemplate_LIB_SRCS})
+TARGET_LINK_LIBRARIES(cxtemplate useful)
 
 ENABLE_TESTING()
 
-ADD_EXECUTABLE(scanner_test scanner.c cbnf.c testing/scanner_test.c)
-TARGET_LINK_LIBRARIES(scanner_test useful)
-ADD_TEST(scanner_0 ${EXECUTABLE_OUTPUT_PATH}/scanner_test ../tests/scanner_0.tst ../tests/scanner_0.bmk)
+ADD_EXECUTABLE(template_test testing/template_test.c)
+TARGET_LINK_LIBRARIES(template_test useful cxtemplate)
 
-ADD_EXECUTABLE(ast_test ast.c cbnf.c testing/ast_test.c)
-TARGET_LINK_LIBRARIES(ast_test useful)
-ADD_TEST(ast_0 ${EXECUTABLE_OUTPUT_PATH}/ast_test)
+MACRO(ADD_TEMPLATE_TEST NUMBER)
+	ADD_TEST(
+		template_${NUMBER} 
+		${EXECUTABLE_OUTPUT_PATH}/template_test
+		../tests/template_${NUMBER}.tst
+		../tests/template_${NUMBER}.bmk
+	)
+ENDMACRO(ADD_TEMPLATE_TEST)
 
-ADD_EXECUTABLE(parser_test parser.c scanner.c ast.c cbnf.c testing/parser_test.c)
-#ADD_TEST(parser_0 ${EXECUTABLE_OUTPUT_PATH}/parser_test ../tests/parser_0.tst ../tests/parser_0.bmk)
-ADD_TEST(parser_1 ${EXECUTABLE_OUTPUT_PATH}/parser_test ../tests/parser_1.tst ../tests/parser_1.bmk)
-ADD_TEST(parser_2 ${EXECUTABLE_OUTPUT_PATH}/parser_test ../tests/parser_2.tst ../tests/parser_2.bmk)
-ADD_TEST(parser_3 ${EXECUTABLE_OUTPUT_PATH}/parser_test ../tests/parser_3.tst ../tests/parser_3.bmk)
+MACRO(ADD_TEMPLATE_TEST_1 NUMBER EXTRA_ARG)
+	ADD_TEST(
+		template_${NUMBER} 
+		${EXECUTABLE_OUTPUT_PATH}/template_test
+		../tests/template_${NUMBER}.tst
+		../tests/template_${NUMBER}.bmk
+		${EXTRA_ARG}
+	)
+ENDMACRO(ADD_TEMPLATE_TEST_1)
 
-ADD_TEST(parser_C ${EXECUTABLE_OUTPUT_PATH}/parser_test ../tests/parser_C.tst ../tests/parser_C.bmk)
-ADD_TEST(parser_JAVA ${EXECUTABLE_OUTPUT_PATH}/parser_test ../tests/parser_JAVA.tst ../tests/parser_JAVA.bmk)
+ADD_TEMPLATE_TEST(0)
+ADD_TEMPLATE_TEST(1)
+ADD_TEMPLATE_TEST(2)
+ADD_TEMPLATE_TEST(3)
+ADD_TEMPLATE_TEST(4)
+ADD_TEMPLATE_TEST(5)
+ADD_TEMPLATE_TEST_1(6 ../tests/template_6.subtemplate)
+ADD_TEMPLATE_TEST(7)
+
+
+

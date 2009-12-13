@@ -4,9 +4,9 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "../useful/include/list.h"
-#include "../useful/include/stringbuilder.h"
-#include "template.h"
+#include "libuseful/src/include/list.h"
+#include "libuseful/src/include/stringbuilder.h"
+#include "include/template.h"
 
 /** 
  * These are the items we will hold in the dictionary hash
