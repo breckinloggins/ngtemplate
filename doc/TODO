@@ -1,0 +1,27 @@
+[X]	Iterator for hashtable
+[X]	Debug print of dictionary
+[X]	Test Framework: Read dictionary/template from file
+[X]	Test Framework: Process template and compare to benchmark
+[X]	Support comment markers
+[X]	Modify template dictionary code to support dictionaries as children
+[X]	Test Framework: Dictionary read code allow escaped special characters
+[X]	Test Framework: Dictionary read code allow comments ('#')
+[X]	Test Framework: Dictionary read code allow nested dictionaries
+[X]	Sections {{#SOMETHING}}.. {{/SOMETHING}} support in template_process
+[X]	Add nested scoping for dictionary markers
+[X]	Support empty sections
+[X]	Support set delimiter markers and specifying set delimiters in code
+[X]	Refactor _process() to be more readable
+[X]	Separator sections support in template_process
+[X]	Includes {{>SOME_FILE}} support in template_process
+	[X]	Add infrastructure support
+	[X]	Add support for template callbacks
+	[X]	Add support for loading templates by filename
+	[X]	Make sure the appropriate indention level is retained when outputting the included template
+[X]	Basic support for template modifiers
+[]	Create tool for turning template files into strings in C headers
+[]	Flesh out README with examples
+
+-	0.2: Binary templates
+-	0.2: Template preprocess into data structure for faster application.  This way parsing overhead would only happen once
+-	0.2: Add support for Pragmas, built-in modifiers, and modifier args
