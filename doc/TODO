@@ -21,7 +21,9 @@
 [X]	Basic support for template modifiers
 []	Create tool for turning template files into strings in C headers
 []	Flesh out README with examples
-
+[X]	Add template_set_stringf, template_set_int
+[]	Add template_load_from_file 
+[]	Break up into multiple files
 -	0.2: Binary templates
 -	0.2: Template preprocess into data structure for faster application.  This way parsing overhead would only happen once
 -	0.2: Add support for Pragmas, built-in modifiers, and modifier args

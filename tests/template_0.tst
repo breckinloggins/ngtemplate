@@ -19,5 +19,11 @@ What happens if we insert a {{ key }} that doesn't exist?
 
 Even better, what happens we insert a bunch of crap like "{{BigText}}".  Hopefully that works!
 
+This formatted string: {{FmtString}} comes directly from the test code using the 
+template_string_stringf() function.
+
+This should be an integer: {{IntValue}}
+
+
 
 

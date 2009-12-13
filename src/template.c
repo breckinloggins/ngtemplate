@@ -4,6 +4,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 #include "../lib/libuseful/src/include/list.h"
 #include "../lib/libuseful/src/include/stringbuilder.h"
 #include "include/template.h"
@@ -240,23 +241,19 @@ int template_add_modifier(template_dictionary* dict, const char* name, modifier_
 }
 
 /**
- * Sets a string value in the template dictionary.  Any instance of "marker" in the template 
- * will be replaced by "value".  If the marker is already in the template, the value will be
- * replaced.
- *
- * Returns 0 if the operation succeeded, -1 otherwise
+ * Helper function for the template_set_* functions.  Does NOT make a copy of the given value
+ * string, but uses the pointer directly.
  */
-int template_set_string(template_dictionary* dict, const char* marker, const char* value)	{
+int _set_string(template_dictionary* dict, const char* marker, char* value)	{
 	_dictionary_item* item, *prev_item;
 	
 	item = _new_dictionary_item();
 	item->type = ITEM_STRING;
 	item->marker = (char*)malloc(strlen(marker) + 1);
-	item->val.string_value = (char*)malloc(strlen(value) + 1);
+	item->val.string_value = value;
 	
 	strcpy(item->marker, marker);
-	strcpy(item->val.string_value, value);
-	
+		
 	if (ht_insert((hashtable*)dict, item) == 1)	{
 		// Already in the table, replace
 		prev_item = item;
@@ -267,6 +264,69 @@ int template_set_string(template_dictionary* dict, const char* marker, const cha
 	}
 	
 	return 0;
+}
+
+/**
+ * Sets a string value in the template dictionary.  Any instance of "marker" in the template 
+ * will be replaced by "value".  If the marker is already in the template, the value will be
+ * replaced.
+ *
+ * Returns 0 if the operation succeeded, -1 otherwise
+ */
+int template_set_string(template_dictionary* dict, const char* marker, const char* value)	{
+	char* str;
+	str = (char*)malloc(strlen(value) + 1);
+	if (!str)	{
+		// Could not allocate enough memory for the string
+		return -1;
+	}
+	
+	strcpy(str, value);
+	return _set_string(dict, marker, str);
+}
+
+/**
+ * Sets a string value in the template dictionary using printf-style format specifiers.  Any
+ * instance of "marker" in the template will be replaced by "value"
+ *
+ * Returns 0 if the operations succeeded, -1 otherwise
+ */
+int template_set_stringf(template_dictionary* dict, const char* marker, const char* fmt, ...)	{
+	// TODO: Won't work on Windows.  Have to use _vscprintf on that platform
+	char* str;
+	int length;
+	va_list arglist;
+	
+	va_start(arglist, fmt);
+	length = vsnprintf(0, 0, fmt, arglist);
+	va_end(arglist);
+	
+	if (length <= 0)	{
+		// Could not determine the space needed for the string
+		return -1;
+	}
+	
+	str = (char*)malloc(length + 1);
+	if (!str)	{
+		// Could not allocate enough memory for the string
+		return -1;
+	}
+	
+	va_start(arglist, fmt);
+	vsnprintf(str, length + 1, fmt, arglist);
+	va_end(arglist);
+	
+	return _set_string(dict, marker, str);
+}
+
+/**
+ * Sets an integer value in the template dictionary.  Any
+ * instance of "marker" in the template will be replaced by "value"
+ *
+ * Returns 0 if the operations succeeded, -1 otherwise
+ */
+int template_set_int(template_dictionary* dict, const char* marker, int value)	{
+	return template_set_stringf(dict, marker, "%d", value);
 }
 
 /**

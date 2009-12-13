@@ -55,6 +55,22 @@ void template_destroy(template_dictionary* dict);
 int template_set_string(template_dictionary* dict, const char* marker, const char* value);
 
 /**
+ * Sets a string value in the template dictionary using printf-style format specifiers.  Any
+ * instance of "marker" in the template will be replaced by "value"
+ *
+ * Returns 0 if the operations succeeded, -1 otherwise
+ */
+int template_set_stringf(template_dictionary* dict, const char* marker, const char* fmt, ...);
+
+/**
+ * Sets an integer value in the template dictionary.  Any
+ * instance of "marker" in the template will be replaced by "value"
+ *
+ * Returns 0 if the operations succeeded, -1 otherwise
+ */
+int template_set_int(template_dictionary* dict, const char* marker, int value);
+
+/**
  * On an include template, sets the filename that will be loaded to obtain the template data
  * NOTES: - It is illegal to call this function on a string value marker
  *        - Calling template_set_include_cb is not necessary if you set a filename, as the file will

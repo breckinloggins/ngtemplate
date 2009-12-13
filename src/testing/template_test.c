@@ -198,6 +198,11 @@ DEFINE_TEST_FUNCTION	{
 	template_add_modifier(d, "modifier", modifier_cb);
 	template_set_include_cb(d, "Callback_Template", get_template_cb, cleanup_template_cb);
 	
+	// To test template_set_stringf(), template_set_int()
+	template_set_stringf(d, "FmtString", "(%d, %f, 0x%x, %s, %s some more %d)", 
+		42, 3.14159, 0xdeadbeef, "A String", "Another String", -72 );
+	template_set_int(d, "IntValue", 12345);	// I have the same combination on my luggage
+	
 	if (argc > 3)	{
 		template_set_include_filename(d, "Filename_Template", argv[3]);
 	}
