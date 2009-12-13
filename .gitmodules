@@ -1,0 +1,3 @@
+[submodule "lib/libuseful"]
+	path = lib/libuseful
+	url = git@github.com:breckinloggins/libuseful.git
