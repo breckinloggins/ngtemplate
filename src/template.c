@@ -4,8 +4,8 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "libuseful/src/include/list.h"
-#include "libuseful/src/include/stringbuilder.h"
+#include "../lib/libuseful/src/include/list.h"
+#include "../lib/libuseful/src/include/stringbuilder.h"
 #include "include/template.h"
 
 /** 

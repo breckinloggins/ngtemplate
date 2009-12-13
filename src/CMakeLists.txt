@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(cxtemplate)
 
-SUBDIRS(libuseful/src)
+SUBDIRS(../lib/libuseful/src)
 
 SET(cxtemplate_LIB_SRCS
 	template.c

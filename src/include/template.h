@@ -5,8 +5,8 @@
 #define TEMPLATE_H
 
 #include <stdio.h>
-#include "../libuseful/src/include/hashtable.h"
-#include "../libuseful/src/include/stringbuilder.h"
+#include "../../lib/libuseful/src/include/hashtable.h"
+#include "../../lib/libuseful/src/include/stringbuilder.h"
 
 #define MAXMARKERLENGTH		64
 #define MAXMODIFIERLENGTH	128
