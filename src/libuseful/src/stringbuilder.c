@@ -12,7 +12,7 @@
  * 
  */
 stringbuilder* sb_new()	{
-	return sb_new_with_size(4090);		// A little less than one hardware page
+	return sb_new_with_size(1024);
 }
 
 /**
