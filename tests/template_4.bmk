@@ -1,9 +1,4 @@
-ClassName=Dog
-Section1={
-	Foo=Bar
-}
 
-!
 	
 
 typedef struct Dog_tag	{

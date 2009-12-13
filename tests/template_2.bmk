@@ -1,25 +1,4 @@
-One=1
-Two=2
-Section1={
-	One="One"
-	Two="Two"
-	KeyThree=This is KeyThree
-}
-Variable=decl
-MultiSection={
-	One=1.0
-	Two=2.0
-	KeyThree=3.0
-	AdditionalThing=That other thing
-}{
-	One="one dot oh"
-	Two="two dot oh"
-	AdditionalThing=That other thing again
-	Last=Bar
-}
-KeyThree=LastThree
 
-!
 This is a test of sections.
 1, 2 
 

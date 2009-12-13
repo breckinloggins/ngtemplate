@@ -30,6 +30,8 @@ typedef void (*modifier_fn)(const char* name, const char* args, const char* mark
 typedef struct template_dictionary_tag	{
 	hashtable ht;
 	hashtable modifiers;
+	
+	char*	template;
 	struct template_dictionary_tag* parent;
 } template_dictionary;
 
@@ -45,6 +47,20 @@ template_dictionary* template_new();
  * Destroys the given template dictionary and any sub-dictionaries
  */
 void template_destroy(template_dictionary* dict);
+
+/**
+ * Loads the template string from the given file pointer.  Does NOT close the pointer
+ *
+ * Returns 0 if successful, -1 otherwise
+ */
+int template_load_from_file(template_dictionary* dict, FILE* fp);
+
+/**
+ * Loads the template string from the given file name
+ *
+ * Returns 0 if successful, -1 otherwise
+ */
+int template_load_from_filename(template_dictionary* dict, const char* filename);
 
 /**
  * Sets a string value in the template dictionary.  Any instance of "marker" in the template 
@@ -113,7 +129,7 @@ int template_add_dictionary(template_dictionary* dict, const char* marker, templ
  *
  * Returns 0 if the template was successfully processed, -1 if there was an error
  */
-int template_process(template_dictionary* dict, const char* template, char** result);
+int template_process(template_dictionary* dict, char** result);
 
 /**
  * Pretty-prints the dictionary key value pairs, one per line, with nested dictionaries tabbed

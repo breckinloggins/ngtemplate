@@ -1,9 +1,9 @@
+{{!#
 ClassName=Dog
 Section1={
 	Foo=Bar
 }
-
-!
+#!}}
 {{=@ @=}}	@! Change delimiter since that's not a valid character in C @
 
 typedef struct @ClassName@_tag	{

@@ -12,11 +12,13 @@
  * next one.  This is due to the fragility of the parser, but since it's a test function, it's really not
  * worth fixing it.
  */
-void read_in_dictionary(FILE* in, FILE* out, template_dictionary* d, int *line)	{
+char* read_in_dictionary(template_dictionary* d, int *line, int in_dictionary)	{
+	// TODO:  This is one big hack of a function.  We should clean this up some time
+	
 	char marker[MAXMARKERLENGTH];
 	char value[MAXVALUELENGTH];
-	char *ptr;
-	int ch, after_equals, escaped, in_comment;
+	char *ptr, *in_ptr;
+	int ch, after_equals, escaped, in_comment, found_dictionary;
 	
 	memset(marker, 0, MAXMARKERLENGTH);
 	memset(value, 0, MAXVALUELENGTH);
@@ -25,7 +27,43 @@ void read_in_dictionary(FILE* in, FILE* out, template_dictionary* d, int *line)	
 	after_equals = 0;
 	in_comment = 0;
 	ptr = marker;
-	while ((ch = fgetc(in)) != EOF)	{
+	in_ptr = d->template;
+	if (!in_ptr)	{
+		return 0;
+	}
+	
+	found_dictionary = in_dictionary;
+	while (!found_dictionary && *in_ptr)	{
+		if (*in_ptr 	== '{' &&
+			*(in_ptr+1)	== '{' &&
+			*(in_ptr+2) == '!' &&
+			*(in_ptr+3) == '#')
+		{
+			found_dictionary = 1;
+			in_ptr+=4;	// Skip over those starting characters
+			break;			
+		}
+		
+		in_ptr++;
+	}
+	
+	if (!found_dictionary)	{
+		return 0;
+	}
+	
+	while (*in_ptr)	{
+		if (*in_ptr		== '#' &&
+			*(in_ptr+1)	== '!' &&
+			*(in_ptr+2) == '}' &&
+			*(in_ptr+3) == '}')	{
+				
+			// Found the end
+			return 0;
+		}
+		
+		ch = (int)*in_ptr++;
+		
+		
 		if (!in_comment && ch == '#')	{
 			// Start comment until newline
 			in_comment = 1;
@@ -41,7 +79,7 @@ void read_in_dictionary(FILE* in, FILE* out, template_dictionary* d, int *line)	
 		
 		if (ch == '\\')	{
 			// We have an escape character coming
-			ch = fgetc(in);
+			ch = (int)*in_ptr++;
 			if (ch == EOF)	{
 				fprintf(stderr, "Unexpected End of File after escape character on line %d\n", *line);
 				exit(-1);
@@ -56,20 +94,7 @@ void read_in_dictionary(FILE* in, FILE* out, template_dictionary* d, int *line)	
 		} else {
 			escaped = 0;
 		}
-		
-		fputc(ch, out);
-		if (!escaped && ch == '!')	{
-			// When we encounter this symbol, it means the dictionary part is done and the 
-			// template is starting
 			
-			if (d->parent)	{
-				// Someone went and put a '!' where it didn't belong
-				fprintf(stderr, "Unexpected end of dictionary marker ('!') in nested dictionary on line %d\n", *line);
-				exit(-1);
-			}
-			return;
-		}
-		
 		if (!escaped && ch == '{')	{
 			if (!after_equals)	{
 				fprintf(stderr, "Unexpected '{' before '=' on line %d\n", *line);
@@ -78,8 +103,10 @@ void read_in_dictionary(FILE* in, FILE* out, template_dictionary* d, int *line)	
 			
 			template_dictionary* child = template_new();
 			child->parent = d;
+			child->template = in_ptr;
 			template_add_dictionary(d, marker, child);
-			read_in_dictionary(in, out, child, line);
+			in_ptr = read_in_dictionary(child, line, 1);
+			child->template = 0;
 			continue;
 		}
 		
@@ -96,7 +123,7 @@ void read_in_dictionary(FILE* in, FILE* out, template_dictionary* d, int *line)	
 			
 			// If we got here, it means that we were a recursive read_in_dictionary call and it's
 			// time for us to exit
-			return;
+			return in_ptr;
 		}
 		
 		if (ch == '\r' || ch == '\n')	{
@@ -134,6 +161,8 @@ void read_in_dictionary(FILE* in, FILE* out, template_dictionary* d, int *line)	
 		
 	}
 	
+	return in_ptr;
+	
 }
 
 char* get_template_cb(const char* name)	{
@@ -166,8 +195,8 @@ void modifier_cb(const char* name, const char* args, const char* marker, const c
 }
 
 DEFINE_TEST_FUNCTION	{
-	char* template, *result;
-	int i, ch, line;
+	char* result;
+	int line;
 	
 	if (argc < 2)	{
 		fprintf(stderr, "Invoking this test with zero arguments is not supported\n");
@@ -176,25 +205,10 @@ DEFINE_TEST_FUNCTION	{
 	
 	template_dictionary* d = template_new();
 	line = 1;
-	read_in_dictionary(in, out, d, &line);
 	
-	// At this point, the in file pointer is pointing to the location AFTER the exclamation mark (or EOF).
-	// Everything from here on out is the actual template
-	
-	// NOTE: This is a little sloppy, but that's ok, it's a test function
-	i = 0;	
-	template = (char*)malloc(1024);
-	while ((ch = fgetc(in)) != EOF)	{
+	template_load_from_file(d, in);
+	read_in_dictionary(d, &line, 0);
 		
-		if (i && (i % 1023 == 0))	{
-			// We're out of room, MOAR!
-			template = (char*)realloc(template, i + 1024);
-		}
-		
-		template[i++] = ch;
-	}
-	template[i] = '\0';
-	
 	template_add_modifier(d, "modifier", modifier_cb);
 	template_set_include_cb(d, "Callback_Template", get_template_cb, cleanup_template_cb);
 	
@@ -207,7 +221,7 @@ DEFINE_TEST_FUNCTION	{
 		template_set_include_filename(d, "Filename_Template", argv[3]);
 	}
 	
-	if (template_process(d, template, &result) < 0)	{
+	if (template_process(d, &result) < 0)	{
 		return -1;
 	}
 	
@@ -215,7 +229,6 @@ DEFINE_TEST_FUNCTION	{
 	
 	free(result);
 	template_destroy(d);
-	free(template);
 	return 0;
 }
 

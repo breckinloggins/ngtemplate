@@ -1,5 +1,5 @@
-# More section testing.  This time testing nested sections and empty sections
-
+{{! More section testing.  This time testing nested sections and empty sections !}}
+{{!#
 One=1
 Two=2
 Section1={
@@ -20,8 +20,7 @@ MultiSection={
 	Last=Bar
 }
 KeyThree=LastThree
-
-!
+#!}}
 This is a test of sections.
 {{One}}, {{Two}}, 
 

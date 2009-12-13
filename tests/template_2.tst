@@ -1,3 +1,4 @@
+{{!#
 One=1
 Two=2
 Section1={
@@ -19,7 +20,7 @@ MultiSection={
 }
 KeyThree=LastThree
 
-!
+#!}}
 This is a test of sections.
 {{One}}, {{Two}} 
 

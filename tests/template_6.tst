@@ -1,3 +1,4 @@
+{{!#
 Foo=Bar
 Callback_Template={
 	Key=This is a key
@@ -13,7 +14,7 @@ Person_Favorites={
 	Band=Pearl Jam
 	Sport=Football
 }
-!
+#!}}
 This template tests include sections
 
 {{! An Include template that doesn't exist.  It should expand to nothing}}

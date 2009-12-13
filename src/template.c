@@ -190,6 +190,9 @@ static void _destroy(void* data)	{
 	
 	ht_destroy(&dict->ht);
 	ht_destroy(&dict->modifiers);
+	if (dict->template)	{
+		free(dict->template);
+	}
 	free(dict);
 }
 
@@ -198,6 +201,93 @@ static void _destroy(void* data)	{
  */
 void template_destroy(template_dictionary* dict)	{
 	_destroy((void*)dict);
+}
+
+/**
+ * Helper function to retrieve a template string from a file
+ */
+static char* _get_template_from_file(FILE* fd)	{
+	int length;
+	int ch, i;
+	char* contents;
+	
+	fseek(fd, 0, SEEK_END);
+	length = ftell(fd);
+	if (!length)	{
+		close(fd);
+		return 0;
+	}
+	rewind(fd);
+	
+	// TODO: Do this with block reads so it's faster
+	i = 0;
+	contents = (char*)malloc(length+1);
+	while ((ch = fgetc(fd)) != EOF)	{
+		contents[i++] = ch;
+	}
+	close(fd);
+	
+	return contents;
+}
+
+/** 
+ * Callback function to retrieve a template string from a file name
+ */
+static char* _get_template_from_filename(const char* filename)	{
+	FILE* fd;
+	char* template;
+	
+	fd = fopen(filename, "rb");
+	if (!fd)	{
+		return 0;
+	}
+	
+	template = _get_template_from_file(fd);
+	close(fd);
+	
+	return template;
+}
+
+/**
+ * Loads the template string from the given file pointer.  Does NOT close the pointer
+ *
+ * Returns 0 if successful, -1 otherwise
+ */
+int template_load_from_file(template_dictionary* dict, FILE* fp)	{
+	char* template;
+	
+	template = _get_template_from_file(fp);
+	if (!template)	{
+		return -1;
+	}
+	
+	if (dict->template)	{
+		free(dict->template);
+	}
+	
+	dict->template = template;
+	return 0;
+}
+
+/**
+ * Loads the template string from the given file name
+ *
+ * Returns 0 if successful, -1 otherwise
+ */
+int template_load_from_filename(template_dictionary* dict, const char* filename)	{
+	char* template;
+	
+	template = _get_template_from_filename(filename);
+	if (!template)	{
+		return -1;
+	}
+	
+	if (dict->template)	{
+		free(dict->template);
+	}
+	
+	dict->template = template;
+	return 0;
 }
 
 /**
@@ -368,39 +458,6 @@ int template_set_include_cb(template_dictionary* dict, const char* marker, get_t
 }
 
 /**
- * Callback function to retrieve a template string from a file
- */
-static char* _get_template_from_file(const char* filename)	{
-	int length;
-	int ch, i;
-	FILE* fd;
-	char* contents;
-	
-	fd = fopen(filename, "rb");
-	if (!fd)	{
-		return 0;
-	}
-	
-	fseek(fd, 0, SEEK_END);
-	length = ftell(fd);
-	if (!length)	{
-		close(fd);
-		return 0;
-	}
-	rewind(fd);
-	
-	// TODO: Do this with block reads so it's faster
-	i = 0;
-	contents = (char*)malloc(length+1);
-	while ((ch = fgetc(fd)) != EOF)	{
-		contents[i++] = ch;
-	}
-	close(fd);
-	
-	return contents;
-}
-
-/**
  * Callback function for cleanup of default file template-includes
  */
 void _cleanup_template(const char* filename, char* template)	{
@@ -463,7 +520,7 @@ static _modifier* _query_modifier(template_dictionary* dict, const char* name)	{
 int template_set_include_filename(template_dictionary* dict, const char* marker, const char* filename)	{
 	_dictionary_item* item;
 	
-	if (template_set_include_cb(dict, marker, _get_template_from_file, _cleanup_template) != 0)	{
+	if (template_set_include_cb(dict, marker, _get_template_from_filename, _cleanup_template) != 0)	{
 		// Something went wrong
 		return -1;
 	}
@@ -1100,7 +1157,7 @@ static char* _process(_parse_context *ctx)	{
  *
  * Returns 0 if the template was successfully processed, -1 if there was an error
  */
-int template_process(template_dictionary* dict, const char* template, char** result)	{
+int template_process(template_dictionary* dict, char** result)	{
 	int res;
 	_parse_context context;
 	char start_marker[2];
@@ -1115,7 +1172,7 @@ int template_process(template_dictionary* dict, const char* template, char** res
 	context.end_delimiter.length = 2;
 	
 	context.dict = dict;
-	context.in_ptr = (char*)template;
+	context.in_ptr = (char*)dict->template;
 	context.template_line = 1;
 	
 	context.out_sb = sb_new_with_size(1024);

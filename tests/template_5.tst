@@ -1,3 +1,4 @@
+{{!#
 People={
 	Person=Bob
 }{
@@ -33,7 +34,7 @@ MuscleCars={
 	Make=Dodge
 	Model=Charger
 }
-!
+#!}}
 People: {{#People}}{{Person}}{{#People_separator}}, {{/People_separator}}{{/People}}
 
 Animals: {{#Animals}}({{Number}}) {{Animal}}{{#Animals_separator}} {{Number}}=> {{/Animals_separator}}{{/Animals}}

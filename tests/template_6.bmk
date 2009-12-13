@@ -1,19 +1,4 @@
-Foo=Bar
-Callback_Template={
-	Key=This is a key
-	One=One
-}
-Filename_Template={
-	Name=John
-	Age=21
-	Quote="Yay, I can finally drink beer!"
-}
-Person_Favorites={
-	Color=Black
-	Band=Pearl Jam
-	Sport=Football
-}
-!
+
 This template tests include sections
 
 
