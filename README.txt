@@ -20,6 +20,14 @@ The engine will emit the following string as output:
 
 Hello, John.  You have read 7 posts on our blog today.  Thank you for visiting!
 
+ngtemplate is designed to follow Google's CTemplate syntax and design (to a 
+point), so you can get a good feel for the capabilities of the library by 
+visiting:
+
+    http://google-ctemplate.googlecode.com/svn/trunk/doc/howto.html
+
+Note that not all features have been implemented yet.    
+
 Anatomy of a Template
 ---------------------
 
