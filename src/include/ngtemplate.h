@@ -1,8 +1,8 @@
 /**
- * An implementation of Google's "CTemplate" in C
+ * Public interface to the ngtemplate engine
  */
-#ifndef TEMPLATE_H
-#define TEMPLATE_H
+#ifndef NGTEMPLATE_H
+#define NGTEMPLATE_H
 
 #include <stdio.h>
 #include "../../lib/libuseful/src/include/hashtable.h"
@@ -171,4 +171,4 @@ int template_process(template_dictionary* dict, char** result);
  */
 void template_print_dictionary(template_dictionary* dict, FILE* out);
 
-#endif // TEMPLATE_H
+#endif // NGTEMPLATE_H

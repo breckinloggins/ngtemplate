@@ -1,5 +1,5 @@
 #include "../../lib/libuseful/src/test_utils.h"
-#include "../include/template.h"
+#include "../include/ngtemplate.h"
 
 #define MAXVALUELENGTH 32767
 
