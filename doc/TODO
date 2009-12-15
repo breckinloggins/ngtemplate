@@ -23,6 +23,7 @@
 []	Flesh out README with examples
 [X]	Add template_set_stringf, template_set_int
 [X]	Add template_load_from_file 
+[X]	Add support for Marker Missing and Modifier Missing callbacks
 []	Break up into multiple files
 -	0.2: Binary templates
 -	0.2: Template preprocess into data structure for faster application.  This way parsing overhead would only happen once

@@ -194,6 +194,33 @@ void modifier_cb(const char* name, const char* args, const char* marker, const c
 	sb_append_str(out_sb, value);
 }
 
+void missing_modifier_cb(const char* name, const char* args, const char* marker, const char* value, stringbuilder* out_sb)	{
+	if (strcmp(name, "DynModifier"))	{
+		// This one doesn't concern us
+		return;
+	}
+	
+	sb_append_str(out_sb, value);
+	sb_append_str(out_sb, " + C");
+}
+
+char* variable_missing_cb(const char* marker)	{
+	stringbuilder* out_sb = sb_new();
+	char* res;
+	
+	if (!strcmp(marker, "DynOne"))	{
+		sb_append_str(out_sb, "One");
+	} else if (!strcmp(marker, "DynTwo"))	{
+		sb_append_str(out_sb, "Two");
+	} else if (!strcmp(marker, "DynThree"))	{
+		sb_append_str(out_sb, "Three");
+	}
+	
+	res = sb_cstring(out_sb);
+	sb_destroy(out_sb, 0);
+	return res;
+}
+
 DEFINE_TEST_FUNCTION	{
 	char* result;
 	int line;
@@ -211,6 +238,8 @@ DEFINE_TEST_FUNCTION	{
 		
 	template_add_modifier(d, "modifier", modifier_cb);
 	template_set_include_cb(d, "Callback_Template", get_template_cb, cleanup_template_cb);
+	template_set_modifier_missing_cb(d, missing_modifier_cb);
+	template_set_variable_missing_cb(d, variable_missing_cb);
 	
 	// To test template_set_stringf(), template_set_int()
 	template_set_stringf(d, "FmtString", "(%d, %f, 0x%x, %s, %s some more %d)", 

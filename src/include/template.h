@@ -27,11 +27,23 @@ typedef void (*cleanup_template_fn)(const char* name, char* template);
  */
 typedef void (*modifier_fn)(const char* name, const char* args, const char* marker, const char* value, stringbuilder* out_sb);
 
+/**
+ * Pointer to a function that will be called to get the value of the given variable marker
+ *   marker - The marker name
+ *
+ * Return an allocated string containing the value, or 0
+ */
+typedef char* (*get_variable_fn)(const char* marker);
+
 typedef struct template_dictionary_tag	{
 	hashtable ht;
 	hashtable modifiers;
 	
 	char*	template;
+	
+	modifier_fn			modifier_missing;
+	get_variable_fn		variable_missing;
+	
 	struct template_dictionary_tag* parent;
 } template_dictionary;
 
@@ -61,6 +73,30 @@ int template_load_from_file(template_dictionary* dict, FILE* fp);
  * Returns 0 if successful, -1 otherwise
  */
 int template_load_from_filename(template_dictionary* dict, const char* filename);
+
+/**
+ * Sets a modifier function that can be called when the given modifier name is encountered
+ * in the template.  The modifier will have the opportunity to adjust the output of the 
+ * marker, and will be passed in any arguments.  If another modifier is already present with
+ * the same name, that modifier will be replaced.
+ *
+ * Returns 0 if the operation succeeded, -1 otherwise
+ */
+int template_add_modifier(template_dictionary* dict, const char* name, modifier_fn mod_fn);
+
+/**
+ * Sets a modifier function that will be called when a modifier in the template does not
+ * resolve to any known modifiers.  The function will have the opportunity to adjust the output
+ * of the marker, and will be passed any arguments.
+ */
+void template_set_modifier_missing_cb(template_dictionary* dict, modifier_fn mod_fn);
+
+/**
+ * Sets a callback function that will be called when no value for a variable marker can be
+ * found.  The function will have the opportunity to give the value of the variable by appending
+ * to the out_sb string builder.
+ */
+void template_set_variable_missing_cb(template_dictionary* dict, get_variable_fn get_fn);
 
 /**
  * Sets a string value in the template dictionary.  Any instance of "marker" in the template 
@@ -112,7 +148,6 @@ int template_set_include_filename(template_dictionary* dict, const char* marker,
  */
 int template_set_include_cb(template_dictionary* dict, const char* marker, get_template_fn get_template, 
 							cleanup_template_fn cleanup_template);
-
 
 /**
  * Adds a child dictionary under the given marker.  If there is an existing dictionary under this marker, 

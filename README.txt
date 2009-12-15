@@ -20,91 +20,42 @@ The engine will emit the following string as output:
 
 Hello, John.  You have read 7 posts on our blog today.  Thank you for visiting!
 
-Anatomy of a Template
----------------------
+Installing
+----------
 
-A template is a string with literal text and markers.  All literal text is output verbatim
-by the template engine and is not modified in any way.  Markers are evaluated and replaced
-depending on their type and the contents of the template dictionary.
-
-Variable Markers
-----------------
-
-Markers that look like {{This}} are variable markers.  When ngtemplate encounters a variable
-marker, it will look up the marker in the data dictionary.  If it finds a match, the marker
-will be replaced by the text in the dictionary.  If the marker cannot be found in the dictionary, 
-the marker will be erased from the output.
-
-Section Markers
----------------
-
-A Section looks like:
-
-{{#Person}}
-	Name: {{Name}}
-	Age: {{Age}}
-	Favorite Color: {{Color}}
+To use ngtemplate:
+	1) Install CMake if you don't have it
+	2) Clone the git repository
+	3) cd ngtemplate
+	4) mkdir build
+	5) cd build
+	6) cmake ../src
+	7) make
+	8) make test
 	
-{{/Person}}
+If all went well you should have a libngtemplate.a in your build directory
 
-Sections correspond to nested template dictionaries inside the parent template dictionary.  A 
-section is expanded as many times as there are entires.  So, given:
+NOTE: CMake-less compilation and binary distributions will come eventually
 
-Persion={
-	Name=John
-	Age=32
-	Color=Blue
-} {
-	Name=Sarah
-	Age=19
-	Color=Purple
-}
+Differences from CTemplate
+--------------------------
 
-You would expect the template above to expand to:
+	- Unlike in CTemplate, you can have as many FOO_separator sections as you like inside a template and they will all be expanded in the order in which the separators are placed
+	- Dictionaries have block scope, meaning that names in the parent dictionary are available in inner dictionaries.  In particular, this means sections can access markers from their parent sections or the root template
+	- ngtemplate is a little more dynamic than CTemplate.  You are allowed to set variable_missing and 
+		modifier_missing callbacks to populate templates dynamically rather than stuffing variable
+		values in a data dictionary ahead of time (or some combination of the two approaches).  This
+		allows neat tricks similar to the magic you can pull off with Ruby's method_missing
 
-	Name: John
-	Age: 32
-	Color: Blue
-	
-	Name: Sarah
-	Age: 19
-	Color: Purple 
+Known Issues and Limitations for Version 0.1
+--------------------------------------------
 
-If there is no entry in the template dictionary for a section, that section is ignored and the markers
-erased from the template output.
-
-Section Separators
-------------------
-
-Take the following template and template dictionary:
-
-My favorite colors are {{#Colors}}{{Color}}{{/Colors}}
-
-Colors={
-	Color=Red
-} {
-	Color=Yellow
-} {
-	Color=Blue
-} {
-	Color=Black
-} {
-	Color=Gray
-}
-
-The output of the template would be:
-
-RedYellowBlueBlackGray
-
-But that's not what you want!  You'd like a comma and a space after all but the last color.
-Fortunately, ngtemplate understands separators:
-
-{{#Colors}}{{Color}}{{#Colors_separator}}, {{/Colors_separator}}{{/Colors}}
-
-Will output:
-
-Red, Yellow, Blue, Black, Gray
-
-Just like you want.
-
-[Work in progress]
+	- You cannot currently specify search directories for templates.  Calls to template_set_filename() need to have absolute or resolvable relative paths to the template file
+	- Pragmas (including AUTOESCAPE) are not currently supported
+	- Modifier support is not yet as capable as CTemplate:
+		- Modifiers are supported, but none are currently built-in
+		- Modifiers are supported on values only, not sections or includes
+		- Modifiers do not currently support arguments
+	- Per-expand-data and custom emitters are not currently supported
+	- Custom delimiters are supported (via {{= =}}), but they cannot be more than 8 characters long
+	- Repeatedly generating output from the same template is slower than it needs to be, because we do not parse the source template into an internal data structure before processing

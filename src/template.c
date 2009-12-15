@@ -303,6 +303,24 @@ _dictionary_item* _new_dictionary_item()	{
 }
 
 /**
+ * Sets a modifier function that will be called when a modifier in the template does not
+ * resolve to any known modifiers.  The function will have the opportunity to adjust the output
+ * of the marker, and will be passed any arguments.
+ */
+void template_set_modifier_missing_cb(template_dictionary* dict, modifier_fn mod_fn)	{
+	dict->modifier_missing = mod_fn;
+}
+
+/**
+ * Sets a callback function that will be called when no value for a variable marker can be
+ * found.  The function will have the opportunity to give the value of the variable by appending
+ * to the out_sb string builder.
+ */
+void template_set_variable_missing_cb(template_dictionary* dict, get_variable_fn get_fn)	{
+	dict->variable_missing = get_fn;
+}
+
+/**
  * Sets a modifier function that can be called when the given modifier name is encountered
  * in the template.  The modifier will have the opportunity to adjust the output of the 
  * marker, and will be passed in any arguments.  If another modifier is already present with
@@ -821,17 +839,36 @@ static void _process_set_delimiter(_parse_context* ctx)	{
  * Helper function - Expands a variable marker in the template
  */
 static void _process_variable(const char* marker, const char* modifiers, _parse_context* ctx)	{
-	int prev_pos;
 	char* value;
+	int applied_modifier;
 	
-	prev_pos = ctx->out_sb->pos;
 	value = (char*)_get_string_value_ref(ctx->dict, marker);
-	if (value)	{
-		sb_append_str(ctx->out_sb, value);
-	} else {
-		return;
+	if (!value) {
+		
+		// Find the first parse context up the chain with a valid
+		// template dictionary and variable missing cb
+		_parse_context* this_ctx = ctx;
+		template_dictionary* dict = 0;
+		while (this_ctx)	{
+			if (this_ctx && this_ctx->dict && this_ctx->dict->variable_missing)	{
+				dict = this_ctx->dict;
+				break;
+			}
+			
+			this_ctx = this_ctx->parent;
+		}
+		
+		if (dict && dict->variable_missing)	{
+			// Give user code a chance to fill in this value
+			value = dict->variable_missing(marker);
+		}
+		
+		if (!value)	{
+			return;
+		}
 	}
 	
+	applied_modifier = 0;	
 	if (ctx->mode & MODE_MARKER_MODIFIER)	{
 		char *p;
 		p = (char*)modifiers;
@@ -849,14 +886,38 @@ static void _process_variable(const char* marker, const char* modifiers, _parse_
 			
 			mod = _query_modifier(ctx->dict, modifier);
 			if (mod)	{
-				ctx->out_sb->pos = prev_pos;
 				mod->modifier(modifier, "", marker, value, ctx->out_sb);
+				applied_modifier = 1;
+			} else {
+				// Find the first parse context up the chain with a valid
+				// template dictionary and modifier missing cb
+				_parse_context* this_ctx = ctx;
+				template_dictionary* dict = 0;
+				while (this_ctx)	{
+					if (this_ctx && this_ctx->dict && this_ctx->dict->modifier_missing)	{
+						dict = this_ctx->dict;
+						break;
+					}
+
+					this_ctx = this_ctx->parent;
+				}
+
+				if (dict && dict->modifier_missing)	{
+					// Give user code a chance to fill in this value
+					dict->modifier_missing(modifier, "", marker, value, ctx->out_sb);
+					applied_modifier = 1;
+				} 
 			}
 			
 			if (*p++ != ':')	{
 				break;
 			}
 		}
+	}
+	
+	if (!applied_modifier)	{
+		// Output the value ourselves
+		sb_append_str(ctx->out_sb, value);
 	}
 		
 }
