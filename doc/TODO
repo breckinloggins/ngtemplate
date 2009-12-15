@@ -1,3 +1,5 @@
+Version 0.1
+-----------
 [X]	Iterator for hashtable
 [X]	Debug print of dictionary
 [X]	Test Framework: Read dictionary/template from file
@@ -19,13 +21,34 @@
 	[X]	Add support for loading templates by filename
 	[X]	Make sure the appropriate indention level is retained when outputting the included template
 [X]	Basic support for template modifiers
-[]	Create tool for turning template files into strings in C headers
 [X]	Add template_set_stringf, template_set_int
 [X]	Add template_load_from_file 
 [X]	Add support for Marker Missing and Modifier Missing callbacks
 [X]	Break up into multiple files
 []	Support modifier args 
 []	Support builtin modifiers :none and :cstring_escape
--	0.2: Binary templates
--	0.2: Template preprocess into data structure for faster application.  This way parsing overhead would only happen once
--	0.2: Add support for Pragmas, more built-in modifiers
+[]  Add show/hide section
+[]	Make sure scoping rules don't find identifiers outside separate template (e.g. greater than an
+    include)
+[]	Add global dictionary
+[]	Make sure all API names are as close as possible to the CTemplate counterparts
+[]	Create tool for turning template files into strings in C headers
+
+Version 0.2
+-----------
+[]	Add support for Pragmas, AUTOESCAPE
+[]	Support :html_escape, :pre_escape, :url_query_escape
+
+Version 0.3
+-----------
+[]	Support :javascript_escape, :cleanse_css, :json_escape
+[]	Add Per-Expand Data feature
+
+Version 0.4
+-----------
+[]	Support rest of built-in CTemplate modifiers
+
+Version 0.5
+-----------
+[]	Binary templates
+[]	Template preprocess into data structure for faster application.  This way parsing overhead would only happen once
