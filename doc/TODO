@@ -20,11 +20,12 @@
 	[X]	Make sure the appropriate indention level is retained when outputting the included template
 [X]	Basic support for template modifiers
 []	Create tool for turning template files into strings in C headers
-[]	Flesh out README with examples
 [X]	Add template_set_stringf, template_set_int
 [X]	Add template_load_from_file 
 [X]	Add support for Marker Missing and Modifier Missing callbacks
-[]	Break up into multiple files
+[X]	Break up into multiple files
+[]	Support modifier args 
+[]	Support builtin modifiers :none and :cstring_escape
 -	0.2: Binary templates
 -	0.2: Template preprocess into data structure for faster application.  This way parsing overhead would only happen once
--	0.2: Add support for Pragmas, built-in modifiers, and modifier args
+-	0.2: Add support for Pragmas, more built-in modifiers
