@@ -27,13 +27,16 @@ To use ngtemplate:
 	1) Install CMake if you don't have it
 	2) Clone the git repository
 	3) cd ngtemplate
-	4) mkdir build
-	5) cd build
-	6) cmake ../src
-	7) make
-	8) make test
+	4) git submodule init
+	5) git submodule update
+	6) cd ngtemplate
+	7) mkdir build
+	8) cd build
+	9) cmake ../src
+	10) make
+	11) make test
 	
-If all went well you should have a libngtemplate.a in your build directory
+If all went well you should have libngtemplate.a and libuseful.a in your build directory
 
 NOTE: CMake-less compilation and binary distributions will come eventually
 
