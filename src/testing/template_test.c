@@ -101,10 +101,10 @@ char* read_in_dictionary(template_dictionary* d, int *line, int in_dictionary)	{
 				exit(-1);
 			}
 			
-			template_dictionary* child = template_new();
+			template_dictionary* child = ngt_new();
 			child->parent = d;
 			child->template = in_ptr;
-			template_add_dictionary(d, marker, child);
+			ngt_add_dictionary(d, marker, child);
 			in_ptr = read_in_dictionary(child, line, 1);
 			child->template = 0;
 			continue;
@@ -129,7 +129,7 @@ char* read_in_dictionary(template_dictionary* d, int *line, int in_dictionary)	{
 		if (ch == '\r' || ch == '\n')	{
 			if (ptr != marker && ptr != value)	{
 				// We have a valid pair (we hope)
-				template_set_string(d, marker, value);
+				ngt_set_string(d, marker, value);
 			}
 			
 			memset(marker, 0, MAXMARKERLENGTH);
@@ -230,34 +230,34 @@ DEFINE_TEST_FUNCTION	{
 		return -1;
 	}
 	
-	template_dictionary* d = template_new();
+	template_dictionary* d = ngt_new();
 	line = 1;
 	
-	template_load_from_file(d, in);
+	ngt_load_from_file(d, in);
 	read_in_dictionary(d, &line, 0);
 		
-	template_add_modifier(d, "modifier", modifier_cb);
-	template_set_include_cb(d, "Callback_Template", get_template_cb, cleanup_template_cb);
-	template_set_modifier_missing_cb(d, missing_modifier_cb);
-	template_set_variable_missing_cb(d, variable_missing_cb);
+	ngt_add_modifier(d, "modifier", modifier_cb);
+	ngt_set_include_cb(d, "Callback_Template", get_template_cb, cleanup_template_cb);
+	ngt_set_modifier_missing_cb(d, missing_modifier_cb);
+	ngt_set_variable_missing_cb(d, variable_missing_cb);
 	
-	// To test template_set_stringf(), template_set_int()
-	template_set_stringf(d, "FmtString", "(%d, %f, 0x%x, %s, %s some more %d)", 
+	// To test ngt_set_stringf(), ngt_set_int()
+	ngt_set_stringf(d, "FmtString", "(%d, %f, 0x%x, %s, %s some more %d)", 
 		42, 3.14159, 0xdeadbeef, "A String", "Another String", -72 );
-	template_set_int(d, "IntValue", 12345);	// I have the same combination on my luggage
+	ngt_set_int(d, "IntValue", 12345);	// I have the same combination on my luggage
 	
 	if (argc > 3)	{
-		template_set_include_filename(d, "Filename_Template", argv[3]);
+		ngt_set_include_filename(d, "Filename_Template", argv[3]);
 	}
 	
-	if (template_process(d, &result) < 0)	{
+	if (ngt_process(d, &result) < 0)	{
 		return -1;
 	}
 	
 	fprintf(out, "%s\n", result);
 	
 	free(result);
-	template_destroy(d);
+	ngt_destroy(d);
 	return 0;
 }
 

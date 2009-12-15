@@ -16,7 +16,7 @@
  * Returns the template_dictionary created, or NULL if this could not be done.  It is up
  * to the caller to manage this dictionary
  */
-template_dictionary* template_new()	{
+template_dictionary* ngt_new()	{
 	template_dictionary* d;
 	
 	// NOTE: Adjust the buckets parameter depending on how many markers are likely to be in a template
@@ -30,7 +30,7 @@ template_dictionary* template_new()	{
 /** 
  * Destroys the given template dictionary and any sub-dictionaries
  */
-void template_destroy(template_dictionary* dict)	{
+void ngt_destroy(template_dictionary* dict)	{
 	_destroy((void*)dict);
 }
 
@@ -39,7 +39,7 @@ void template_destroy(template_dictionary* dict)	{
  *
  * Returns 0 if successful, -1 otherwise
  */
-int template_load_from_file(template_dictionary* dict, FILE* fp)	{
+int ngt_load_from_file(template_dictionary* dict, FILE* fp)	{
 	char* template;
 	
 	template = _get_template_from_file(fp);
@@ -60,7 +60,7 @@ int template_load_from_file(template_dictionary* dict, FILE* fp)	{
  *
  * Returns 0 if successful, -1 otherwise
  */
-int template_load_from_filename(template_dictionary* dict, const char* filename)	{
+int ngt_load_from_filename(template_dictionary* dict, const char* filename)	{
 	char* template;
 	
 	template = _get_template_from_filename(filename);
@@ -81,7 +81,7 @@ int template_load_from_filename(template_dictionary* dict, const char* filename)
  * resolve to any known modifiers.  The function will have the opportunity to adjust the output
  * of the marker, and will be passed any arguments.
  */
-void template_set_modifier_missing_cb(template_dictionary* dict, modifier_fn mod_fn)	{
+void ngt_set_modifier_missing_cb(template_dictionary* dict, modifier_fn mod_fn)	{
 	dict->modifier_missing = mod_fn;
 }
 
@@ -90,7 +90,7 @@ void template_set_modifier_missing_cb(template_dictionary* dict, modifier_fn mod
  * found.  The function will have the opportunity to give the value of the variable by appending
  * to the out_sb string builder.
  */
-void template_set_variable_missing_cb(template_dictionary* dict, get_variable_fn get_fn)	{
+void ngt_set_variable_missing_cb(template_dictionary* dict, get_variable_fn get_fn)	{
 	dict->variable_missing = get_fn;
 }
 
@@ -102,7 +102,7 @@ void template_set_variable_missing_cb(template_dictionary* dict, get_variable_fn
  *
  * Returns 0 if the operation succeeded, -1 otherwise
  */
-int template_add_modifier(template_dictionary* dict, const char* name, modifier_fn mod_fn)	{
+int ngt_add_modifier(template_dictionary* dict, const char* name, modifier_fn mod_fn)	{
 	_modifier* mod, *prev_mod;
 	
 	mod = (_modifier*)malloc(sizeof(_modifier));
@@ -129,7 +129,7 @@ int template_add_modifier(template_dictionary* dict, const char* name, modifier_
  *
  * Returns 0 if the operation succeeded, -1 otherwise
  */
-int template_set_string(template_dictionary* dict, const char* marker, const char* value)	{
+int ngt_set_string(template_dictionary* dict, const char* marker, const char* value)	{
 	char* str;
 	str = (char*)malloc(strlen(value) + 1);
 	if (!str)	{
@@ -147,7 +147,7 @@ int template_set_string(template_dictionary* dict, const char* marker, const cha
  *
  * Returns 0 if the operations succeeded, -1 otherwise
  */
-int template_set_stringf(template_dictionary* dict, const char* marker, const char* fmt, ...)	{
+int ngt_set_stringf(template_dictionary* dict, const char* marker, const char* fmt, ...)	{
 	// TODO: Won't work on Windows.  Have to use _vscprintf on that platform
 	char* str;
 	int length;
@@ -181,8 +181,8 @@ int template_set_stringf(template_dictionary* dict, const char* marker, const ch
  *
  * Returns 0 if the operations succeeded, -1 otherwise
  */
-int template_set_int(template_dictionary* dict, const char* marker, int value)	{
-	return template_set_stringf(dict, marker, "%d", value);
+int ngt_set_int(template_dictionary* dict, const char* marker, int value)	{
+	return ngt_set_stringf(dict, marker, "%d", value);
 }
 
 /**
@@ -194,7 +194,7 @@ int template_set_int(template_dictionary* dict, const char* marker, int value)	{
  *
  * Returns 0 if the operation succeeded, -1 otherwise
  */
-int template_set_include_cb(template_dictionary* dict, const char* marker, get_template_fn get_template, 
+int ngt_set_include_cb(template_dictionary* dict, const char* marker, get_template_fn get_template, 
 							cleanup_template_fn cleanup_template)	{
 	_dictionary_item* item, *prev_item;
 	
@@ -229,10 +229,10 @@ int template_set_include_cb(template_dictionary* dict, const char* marker, get_t
  *
  * Returns 0 if the operation succeeded, -1 otherwise
  */
-int template_set_include_filename(template_dictionary* dict, const char* marker, const char* filename)	{
+int ngt_set_include_filename(template_dictionary* dict, const char* marker, const char* filename)	{
 	_dictionary_item* item;
 	
-	if (template_set_include_cb(dict, marker, _get_template_from_filename, _cleanup_template) != 0)	{
+	if (ngt_set_include_cb(dict, marker, _get_template_from_filename, _cleanup_template) != 0)	{
 		// Something went wrong
 		return -1;
 	}
@@ -250,7 +250,7 @@ int template_set_include_filename(template_dictionary* dict, const char* marker,
  *
  * Returns 0 if the operation succeeded, -1 otherwise
  */
-int template_add_dictionary(template_dictionary* dict, const char* marker, template_dictionary* child)	{
+int ngt_add_dictionary(template_dictionary* dict, const char* marker, template_dictionary* child)	{
 	_dictionary_item* item, *prev_item;
 	
 	item = (_dictionary_item*)malloc(sizeof(_dictionary_item));
@@ -292,7 +292,7 @@ int template_add_dictionary(template_dictionary* dict, const char* marker, templ
  *
  * Returns 0 if the template was successfully processed, -1 if there was an error
  */
-int template_process(template_dictionary* dict, char** result)	{
+int ngt_process(template_dictionary* dict, char** result)	{
 	int res;
 	_parse_context context;
 	char start_marker[2];
@@ -322,7 +322,7 @@ int template_process(template_dictionary* dict, char** result)	{
 /**
  * Pretty-prints the dictionary key value pairs, one per line, with nested dictionaries tabbed
  */
-void template_print_dictionary(template_dictionary* dict, FILE* out)	{
+void ngt_print_dictionary(template_dictionary* dict, FILE* out)	{
 	
 	hashtable_iter* it = ht_iter_begin((hashtable*)dict);
 	_dictionary_item* item;

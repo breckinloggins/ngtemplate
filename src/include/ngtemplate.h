@@ -53,26 +53,26 @@ typedef struct template_dictionary_tag	{
  * Returns the template_dictionary created, or NULL if this could not be done.  It is up
  * to the caller to manage this dictionary
  */
-template_dictionary* template_new();
+template_dictionary* ngt_new();
 
 /** 
  * Destroys the given template dictionary and any sub-dictionaries
  */
-void template_destroy(template_dictionary* dict);
+void ngt_destroy(template_dictionary* dict);
 
 /**
  * Loads the template string from the given file pointer.  Does NOT close the pointer
  *
  * Returns 0 if successful, -1 otherwise
  */
-int template_load_from_file(template_dictionary* dict, FILE* fp);
+int ngt_load_from_file(template_dictionary* dict, FILE* fp);
 
 /**
  * Loads the template string from the given file name
  *
  * Returns 0 if successful, -1 otherwise
  */
-int template_load_from_filename(template_dictionary* dict, const char* filename);
+int ngt_load_from_filename(template_dictionary* dict, const char* filename);
 
 /**
  * Sets a modifier function that can be called when the given modifier name is encountered
@@ -82,21 +82,21 @@ int template_load_from_filename(template_dictionary* dict, const char* filename)
  *
  * Returns 0 if the operation succeeded, -1 otherwise
  */
-int template_add_modifier(template_dictionary* dict, const char* name, modifier_fn mod_fn);
+int ngt_add_modifier(template_dictionary* dict, const char* name, modifier_fn mod_fn);
 
 /**
  * Sets a modifier function that will be called when a modifier in the template does not
  * resolve to any known modifiers.  The function will have the opportunity to adjust the output
  * of the marker, and will be passed any arguments.
  */
-void template_set_modifier_missing_cb(template_dictionary* dict, modifier_fn mod_fn);
+void ngt_set_modifier_missing_cb(template_dictionary* dict, modifier_fn mod_fn);
 
 /**
  * Sets a callback function that will be called when no value for a variable marker can be
  * found.  The function will have the opportunity to give the value of the variable by appending
  * to the out_sb string builder.
  */
-void template_set_variable_missing_cb(template_dictionary* dict, get_variable_fn get_fn);
+void ngt_set_variable_missing_cb(template_dictionary* dict, get_variable_fn get_fn);
 
 /**
  * Sets a string value in the template dictionary.  Any instance of "marker" in the template 
@@ -104,7 +104,7 @@ void template_set_variable_missing_cb(template_dictionary* dict, get_variable_fn
  *
  * Returns 0 if the operation succeeded, -1 otherwise
  */
-int template_set_string(template_dictionary* dict, const char* marker, const char* value);
+int ngt_set_string(template_dictionary* dict, const char* marker, const char* value);
 
 /**
  * Sets a string value in the template dictionary using printf-style format specifiers.  Any
@@ -112,7 +112,7 @@ int template_set_string(template_dictionary* dict, const char* marker, const cha
  *
  * Returns 0 if the operations succeeded, -1 otherwise
  */
-int template_set_stringf(template_dictionary* dict, const char* marker, const char* fmt, ...);
+int ngt_set_stringf(template_dictionary* dict, const char* marker, const char* fmt, ...);
 
 /**
  * Sets an integer value in the template dictionary.  Any
@@ -120,7 +120,7 @@ int template_set_stringf(template_dictionary* dict, const char* marker, const ch
  *
  * Returns 0 if the operations succeeded, -1 otherwise
  */
-int template_set_int(template_dictionary* dict, const char* marker, int value);
+int ngt_set_int(template_dictionary* dict, const char* marker, int value);
 
 /**
  * On an include template, sets the filename that will be loaded to obtain the template data
@@ -133,7 +133,7 @@ int template_set_int(template_dictionary* dict, const char* marker, int value);
  *
  * Returns 0 if the operation succeeded, -1 otherwise
  */
-int template_set_include_filename(template_dictionary* dict, const char* marker, const char* filename);
+int ngt_set_include_filename(template_dictionary* dict, const char* marker, const char* filename);
 
 /**
  * On an include template, sets the callbacks to be called when the system needs the template
@@ -146,7 +146,7 @@ int template_set_include_filename(template_dictionary* dict, const char* marker,
  * 
  * Returns 0 if the operation succeeded, -1 otherwise
  */
-int template_set_include_cb(template_dictionary* dict, const char* marker, get_template_fn get_template, 
+int ngt_set_include_cb(template_dictionary* dict, const char* marker, get_template_fn get_template, 
 							cleanup_template_fn cleanup_template);
 
 /**
@@ -155,7 +155,7 @@ int template_set_include_cb(template_dictionary* dict, const char* marker, get_t
  *
  * Returns 0 if the operation succeeded, -1 otherwise
  */
-int template_add_dictionary(template_dictionary* dict, const char* marker, template_dictionary* child);
+int ngt_add_dictionary(template_dictionary* dict, const char* marker, template_dictionary* child);
 
 /**
  * Processes the given template according to the dictionary, putting the result in "result" pointer.
@@ -164,11 +164,11 @@ int template_add_dictionary(template_dictionary* dict, const char* marker, templ
  *
  * Returns 0 if the template was successfully processed, -1 if there was an error
  */
-int template_process(template_dictionary* dict, char** result);
+int ngt_process(template_dictionary* dict, char** result);
 
 /**
  * Pretty-prints the dictionary key value pairs, one per line, with nested dictionaries tabbed
  */
-void template_print_dictionary(template_dictionary* dict, FILE* out);
+void ngt_print_dictionary(template_dictionary* dict, FILE* out);
 
 #endif // NGTEMPLATE_H
