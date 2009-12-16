@@ -11,6 +11,28 @@
 #include "internal.h"
 
 /**
+ * This is a special dictionary that contains global modifiers and dictionary
+ * values
+ */
+static template_dictionary* s_global_dictionary = 0;
+
+static int s_initialized = 0;
+
+/**
+ * Initializes the ngtemplate library.  This must be called before dictionaries
+ * can be created or templates processed
+ */
+void ngt_init()	{
+	if (s_initialized)	{
+		return;
+	}
+	
+	s_initialized = 1;
+	s_global_dictionary = ngt_new();
+	_init_standard_environment(s_global_dictionary);
+}
+
+/**
  * Creates a new template_dictionary, ready to be filled with values and sections
  *
  * Returns the template_dictionary created, or NULL if this could not be done.  It is up
@@ -18,6 +40,11 @@
  */
 template_dictionary* ngt_new()	{
 	template_dictionary* d;
+	
+	if (!s_initialized)	{
+		fprintf(stderr, "FATAL: You must call ngt_init() before creating any template dictionaries\n");
+		return 0;
+	}
 	
 	// NOTE: Adjust the buckets parameter depending on how many markers are likely to be in a template
 	//		file (then adjust upward to the next prime number)
@@ -345,4 +372,12 @@ void ngt_print_dictionary(template_dictionary* dict, FILE* out)	{
 		
 		it = ht_iter_next(it);
 	}
+}
+
+/**
+ * Returns that Global Dictionary in which the Standard Environment for all templates is defined, 
+ * including built-in modifiers and default variables
+ */
+template_dictionary* ngt_get_global_dictionary()	{
+	return s_global_dictionary;
 }

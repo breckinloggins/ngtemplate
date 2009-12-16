@@ -54,6 +54,8 @@ Differences from CTemplate
 	- Block scope for marker identifiers works even for template includes.  In other words, if an
       included template references a marker not in the include template's dictionary, it will be found
       if the including template has a dictionary entry with that name
+	- Includes a built-in modifier called :cstring_escape that turns newlines into \n, tabs into \t, 
+      quotes into \", and so forth
 
 Known Issues and Limitations for Version 0.1
 --------------------------------------------

@@ -181,10 +181,10 @@ void _cleanup_template(const char* filename, char* template);
 _dictionary_item* _query_item(template_dictionary* dict, const char* marker);
 
 /**
- * Helper function - Queries the dictionary for the modifier for the given name and returns the
- * modifier if it exists
+ * Helper function - Gets the modifier by the given name if it exists anywhere in the
+ * dictionary hierarchy or in the global dictionary
  */
-_modifier* _query_modifier(template_dictionary* dict, const char* name);
+_modifier* _get_modifier_ref(template_dictionary* dict, const char* name);
 
 /**
  * Gets the string value in the dictionary for the given marker
@@ -283,5 +283,12 @@ void _process_include(const char* marker, _parse_context* ctx);
  * Returns -1 if there was an error, otherwise records a pointer to the position in the template when the function ended
  */ 
 char* _process(_parse_context *ctx);
+
+/**
+ * Sets up the ngtemplate standard environment inside the given dictionary
+ *
+ * NOTE: This is mainly intended to be called for the Global Dictionary
+ */
+void _init_standard_environment(template_dictionary* d);
 
 #endif // INTERNAL_H

@@ -5,6 +5,7 @@ SUBDIRS(../lib/libuseful/src)
 
 SET(ngtemplate_LIB_SRCS
 	internal.c
+	stdenv.c
 	ngtemplate.c
 )
 
@@ -44,3 +45,4 @@ ADD_TEMPLATE_TEST(5)
 ADD_TEMPLATE_TEST_1(6 ../tests/template_6.subtemplate)
 ADD_TEMPLATE_TEST(7)
 ADD_TEMPLATE_TEST(8)
+ADD_TEMPLATE_TEST(9)

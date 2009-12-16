@@ -230,6 +230,7 @@ DEFINE_TEST_FUNCTION	{
 		return -1;
 	}
 	
+	ngt_init();
 	template_dictionary* d = ngt_new();
 	line = 1;
 	

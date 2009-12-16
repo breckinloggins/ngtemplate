@@ -26,9 +26,10 @@ Version 0.1
 [X]	Add support for Marker Missing and Modifier Missing callbacks
 [X]	Break up into multiple files
 []	Support modifier args 
-[]	Support builtin modifiers :none and :cstring_escape
+[X]	Support builtin modifiers :none and :cstring_escape
 []  Add show/hide section
-[]	Add global dictionary
+[X]	Add global dictionary
+[X]	Add BI_SPACE and BI_NEWLINE to global dictionary
 []	Make sure all API names are as close as possible to the CTemplate counterparts
 []	Create tool for turning template files into strings in C headers
 
@@ -36,6 +37,7 @@ Version 0.2
 -----------
 []	Add support for Pragmas, AUTOESCAPE
 []	Support :html_escape, :pre_escape, :url_query_escape
+[]	Support template behaviors: DO_NOT_STRIP, STRIP_BLANK_LINES, STRIP_WHITESPACE
 
 Version 0.3
 -----------

@@ -167,6 +167,12 @@ int ngt_add_dictionary(template_dictionary* dict, const char* marker, template_d
 int ngt_process(template_dictionary* dict, char** result);
 
 /**
+ * Returns that Global Dictionary in which the Standard Environment for all templates is defined, 
+ * including built-in modifiers and default variables
+ */
+template_dictionary* ngt_get_global_dictionary();
+
+/**
  * Pretty-prints the dictionary key value pairs, one per line, with nested dictionaries tabbed
  */
 void ngt_print_dictionary(template_dictionary* dict, FILE* out);

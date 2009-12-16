@@ -186,6 +186,11 @@ void _cleanup_template(const char* filename, char* template)	{
  */
 _dictionary_item* _query_item(template_dictionary* dict, const char* marker)	{
 	_dictionary_item* query_item, *item;
+	
+	if (!dict)	{
+		return 0;
+	}
+	
 	query_item = (_dictionary_item*)malloc(sizeof(_dictionary_item));
 	query_item->marker = (char*)marker;
 	query_item->val.string_value = 0;
@@ -204,11 +209,15 @@ _dictionary_item* _query_item(template_dictionary* dict, const char* marker)	{
 }
 
 /**
- * Helper function - Queries the dictionary for the modifier for the given name and returns the
- * modifier if it exists
+ * Helper function - Gets the modifier by the given name if it exists anywhere in the
+ * dictionary hierarchy or in the global dictionary
  */
-_modifier* _query_modifier(template_dictionary* dict, const char* name)	{
+_modifier* _get_modifier_ref(template_dictionary* dict, const char* name)	{
 	_modifier* query_mod, *mod;
+	if (!dict)	{
+		return 0;
+	}
+	
 	query_mod = (_modifier*)malloc(sizeof(_modifier));
 	query_mod->name = (char*)name;
 	
@@ -216,8 +225,13 @@ _modifier* _query_modifier(template_dictionary* dict, const char* name)	{
 	
 	if (ht_lookup((hashtable*)dict, (void*)&mod) != 0)	{
 		// No value for this key
-		free(query_mod);
-		return 0;
+		
+		// Try the next dictionary, and if still not there, try the global dictionary
+		// as a last resort
+		mod = _get_modifier_ref(dict->parent, name);
+		if (!mod && dict != ngt_get_global_dictionary())	{
+			mod = _get_modifier_ref(ngt_get_global_dictionary(), name);
+		}
 	}
 	
 	free(query_mod);
@@ -241,10 +255,15 @@ const char* _get_string_value_ref(template_dictionary* dict, const char* marker)
 	item = _query_item(dict, marker);
 	if (!item)	{
 		// Look in the parent dictionary
-		return _get_string_value_ref(dict->parent, marker);
+		item = _query_item(dict->parent, marker);
 	}
 	
-	if (item->type != ITEM_STRING)	{
+	if (!item && dict != ngt_get_global_dictionary())	{
+		// Last chance, look up in global dictionary
+		item = _query_item(ngt_get_global_dictionary(), marker);
+	}
+	
+	if (!item || item->type != ITEM_STRING)	{
 		// Getting a non-string item as a string is not defined
 		return 0;
 	}
@@ -269,10 +288,15 @@ const list* _get_dictionary_list_ref(template_dictionary* dict, const char* mark
 	item = _query_item(dict, marker);
 	if (!item)	{
 		// Look in the parent dictionary
-		return _get_dictionary_list_ref(dict->parent, marker);
+		item = _query_item(dict->parent, marker);
 	}
 	
-	if (!(item->type & ITEM_D_LIST))	{
+	if (!item && dict != ngt_get_global_dictionary())	{
+		// Last chance, look up in global dictionary
+		item = _query_item(ngt_get_global_dictionary(), marker);
+	}
+	
+	if (!item || !(item->type & ITEM_D_LIST))	{
 		// Getting a non-d-list item as a d-list is not defined
 		return 0;
 	}
@@ -297,10 +321,15 @@ struct _include_params_tag* _get_include_params_ref(template_dictionary* dict, c
 	item = _query_item(dict, marker);
 	if (!item)	{
 		// Look in the parent dictionary
-		return _get_include_params_ref(dict->parent, marker);
+		item = _query_item(dict->parent, marker);
 	}
 	
-	if (item->type != ITEM_INCLUDE)	{
+	if (!item && dict != ngt_get_global_dictionary())	{
+		// Last chance, look up in global dictionary
+		item = _query_item(ngt_get_global_dictionary(), marker);
+	}
+	
+	if (!item || item->type != ITEM_INCLUDE)	{
 		// Getting a non-include item as an include is not defined
 		return 0;
 	}
@@ -504,7 +533,7 @@ void _process_variable(const char* marker, const char* modifiers, _parse_context
 			}
 			modifier[m] = '\0';
 			
-			mod = _query_modifier(ctx->dict, modifier);
+			mod = _get_modifier_ref(ctx->dict, modifier);
 			if (mod)	{
 				mod->modifier(modifier, "", marker, value, ctx->out_sb);
 				applied_modifier = 1;

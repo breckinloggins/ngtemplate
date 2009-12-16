@@ -1,0 +1,8 @@
+
+
+NoneModifier=This sentence should come out just like this
+CStringModifier=This should have\tescapes for various things like \"quotes\" and tabs
+
+There should be spaces Between These Words, and a newline
+here
+
