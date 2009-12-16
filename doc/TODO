@@ -28,8 +28,6 @@ Version 0.1
 []	Support modifier args 
 []	Support builtin modifiers :none and :cstring_escape
 []  Add show/hide section
-[]	Make sure scoping rules don't find identifiers outside separate template (e.g. greater than an
-    include)
 []	Add global dictionary
 []	Make sure all API names are as close as possible to the CTemplate counterparts
 []	Create tool for turning template files into strings in C headers

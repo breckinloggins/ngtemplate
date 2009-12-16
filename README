@@ -51,6 +51,9 @@ Differences from CTemplate
       allows neat tricks similar to the magic you can pull off with Ruby's method_missing
 	- Unlike in CTemplate, you can have as many FOO_separator sections as you like inside a template 
 	  and they will all be expanded in the order in which the separators are placed
+	- Block scope for marker identifiers works even for template includes.  In other words, if an
+      included template references a marker not in the include template's dictionary, it will be found
+      if the including template has a dictionary entry with that name
 
 Known Issues and Limitations for Version 0.1
 --------------------------------------------

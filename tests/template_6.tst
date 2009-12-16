@@ -14,6 +14,7 @@ Person_Favorites={
 	Band=Pearl Jam
 	Sport=Football
 }
+Extra=If you can't see this there is a bug
 #!}}
 This template tests include sections
 

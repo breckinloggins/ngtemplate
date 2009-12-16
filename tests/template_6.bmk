@@ -17,6 +17,7 @@ A person:
 -----------------------------------------------
 Name:	John
 Age:	21
+	If you can't see this there is a bug
 	
 	Favorite Color = Black
 	Favorite Band = Pearl Jam
@@ -35,6 +36,7 @@ Again, but should be indented:
 	-----------------------------------------------
 	Name:	John
 	Age:	21
+		If you can't see this there is a bug
 		
 		Favorite Color = Black
 		Favorite Band = Pearl Jam

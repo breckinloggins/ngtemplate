@@ -1,6 +1,7 @@
 -----------------------------------------------
 Name:	{{Name}}
 Age:	{{Age}}
+	{{Extra}}
 	{{#Person_Favorites}}
 	Favorite Color = {{Color}}
 	Favorite Band = {{Band}}
