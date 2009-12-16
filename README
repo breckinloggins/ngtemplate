@@ -64,7 +64,7 @@ Known Issues and Limitations for Version 0.1
       template_set_filename() need to have absolute or resolvable relative paths to the template file
 	- Pragmas (including AUTOESCAPE) are not currently supported
 	- Modifier support is not yet as capable as CTemplate:
-		- Modifiers are supported, but none are currently built-in
+		- Modifiers are supported, but none are currently built-in except :none and :cstring_escape
 		- Modifiers are supported on values only, not sections or includes
 		- Modifiers do not currently support arguments
 	- Per-expand-data and custom emitters are not currently supported
