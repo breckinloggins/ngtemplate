@@ -90,7 +90,7 @@ typedef struct _parse_context_tag	{
 	char* current_section;					// The current section we're in (could be null)
 	int last_expansion;						// Nonzero if this is the last expansion in a series of
 											// 	section expansions.  Used for separator logic
-	template_dictionary* dict;				// The current data dictionary in use
+	ngt_template* dict;				// The current data dictionary in use
 	_delimiter start_delimiter;				// Characters that signify start of a marker
 	_delimiter end_delimiter;				// Characters that signify end of a marker
 	
@@ -165,7 +165,7 @@ _dictionary_item* _new_dictionary_item();
  * Helper function for the template_set_* functions.  Does NOT make a copy of the given value
  * string, but uses the pointer directly.
  */
-int _set_string(template_dictionary* dict, const char* marker, char* value);
+int _set_string(ngt_template* dict, const char* marker, char* value);
 
 /**
  * Callback function for cleanup of default file template-includes
@@ -178,13 +178,13 @@ void _cleanup_template(const char* filename, char* template);
  * 
  * Returns a pointer to the item if it exists, zero if not
  */
-_dictionary_item* _query_item(template_dictionary* dict, const char* marker);
+_dictionary_item* _query_item(ngt_template* dict, const char* marker);
 
 /**
  * Helper function - Gets the modifier by the given name if it exists anywhere in the
  * dictionary hierarchy or in the global dictionary
  */
-_modifier* _get_modifier_ref(template_dictionary* dict, const char* name);
+_modifier* _get_modifier_ref(ngt_template* dict, const char* name);
 
 /**
  * Gets the string value in the dictionary for the given marker
@@ -193,7 +193,7 @@ _modifier* _get_modifier_ref(template_dictionary* dict, const char* name);
  *
  * Returns the pointer to the value of the marker, or 0 if not found
  */
-const char* _get_string_value_ref(template_dictionary* dict, const char* marker);
+const char* _get_string_value_ref(ngt_template* dict, const char* marker);
 
 /**
  * Gets the dictionary list value in the dictionary for the given marker
@@ -203,7 +203,7 @@ const char* _get_string_value_ref(template_dictionary* dict, const char* marker)
  * Returns the pointer to the value of the marker, or 0 if not found or if the given node is not
  * a D_LIST
  */
-const list* _get_dictionary_list_ref(template_dictionary* dict, const char* marker);
+const list* _get_dictionary_list_ref(ngt_template* dict, const char* marker);
 
 /**
  * Gets the include params struct in the dictionary for the given marker
@@ -213,7 +213,7 @@ const list* _get_dictionary_list_ref(template_dictionary* dict, const char* mark
  * Returns the pointer to the value of the marker, or 0 if not found or if the given node is not
  * an INCLUDE
  */
-struct _include_params_tag* _get_include_params_ref(template_dictionary* dict, const char* marker);
+struct _include_params_tag* _get_include_params_ref(ngt_template* dict, const char* marker);
 
 /**
  * Helper function - returns nonzero if the portion of the input string starting at p matches the given
@@ -289,6 +289,6 @@ char* _process(_parse_context *ctx);
  *
  * NOTE: This is mainly intended to be called for the Global Dictionary
  */
-void _init_standard_environment(template_dictionary* d);
+void _init_standard_environment(ngt_template* d);
 
 #endif // INTERNAL_H

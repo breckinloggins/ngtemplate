@@ -78,9 +78,9 @@ void _modifier_destroy(void *data)	{
  * Signature comforms to hashtable and list function pointer signature
  */
 void _destroy(void* data)	{
-	template_dictionary* dict = (template_dictionary*)data;
+	ngt_template* dict = (ngt_template*)data;
 	
-	ht_destroy(&dict->ht);
+	ht_destroy(&dict->dict);
 	ht_destroy(&dict->modifiers);
 	if (dict->template)	{
 		free(dict->template);
@@ -149,7 +149,7 @@ _dictionary_item* _new_dictionary_item()	{
  * Helper function for the template_set_* functions.  Does NOT make a copy of the given value
  * string, but uses the pointer directly.
  */
-int _set_string(template_dictionary* dict, const char* marker, char* value)	{
+int _set_string(ngt_template* dict, const char* marker, char* value)	{
 	_dictionary_item* item, *prev_item;
 	
 	item = _new_dictionary_item();
@@ -184,7 +184,7 @@ void _cleanup_template(const char* filename, char* template)	{
  * 
  * Returns a pointer to the item if it exists, zero if not
  */
-_dictionary_item* _query_item(template_dictionary* dict, const char* marker)	{
+_dictionary_item* _query_item(ngt_template* dict, const char* marker)	{
 	_dictionary_item* query_item, *item;
 	
 	if (!dict)	{
@@ -212,7 +212,7 @@ _dictionary_item* _query_item(template_dictionary* dict, const char* marker)	{
  * Helper function - Gets the modifier by the given name if it exists anywhere in the
  * dictionary hierarchy or in the global dictionary
  */
-_modifier* _get_modifier_ref(template_dictionary* dict, const char* name)	{
+_modifier* _get_modifier_ref(ngt_template* dict, const char* name)	{
 	_modifier* query_mod, *mod;
 	if (!dict)	{
 		return 0;
@@ -246,7 +246,7 @@ _modifier* _get_modifier_ref(template_dictionary* dict, const char* name)	{
  *
  * Returns the pointer to the value of the marker, or 0 if not found
  */
-const char* _get_string_value_ref(template_dictionary* dict, const char* marker)	{
+const char* _get_string_value_ref(ngt_template* dict, const char* marker)	{
 	_dictionary_item* item;
 	if (!dict)	{
 		return 0;
@@ -279,7 +279,7 @@ const char* _get_string_value_ref(template_dictionary* dict, const char* marker)
  * Returns the pointer to the value of the marker, or 0 if not found or if the given node is not
  * a D_LIST
  */
-const list* _get_dictionary_list_ref(template_dictionary* dict, const char* marker)	{
+const list* _get_dictionary_list_ref(ngt_template* dict, const char* marker)	{
 	_dictionary_item* item;
 	if (!dict)	{
 		return 0;
@@ -312,7 +312,7 @@ const list* _get_dictionary_list_ref(template_dictionary* dict, const char* mark
  * Returns the pointer to the value of the marker, or 0 if not found or if the given node is not
  * an INCLUDE
  */
-struct _include_params_tag* _get_include_params_ref(template_dictionary* dict, const char* marker)	{
+struct _include_params_tag* _get_include_params_ref(ngt_template* dict, const char* marker)	{
 	_dictionary_item* item;
 	if (!dict)	{
 		return 0;
@@ -497,7 +497,7 @@ void _process_variable(const char* marker, const char* modifiers, _parse_context
 		// Find the first parse context up the chain with a valid
 		// template dictionary and variable missing cb
 		_parse_context* this_ctx = ctx;
-		template_dictionary* dict = 0;
+		ngt_template* dict = 0;
 		while (this_ctx)	{
 			if (this_ctx && this_ctx->dict && this_ctx->dict->variable_missing)	{
 				dict = this_ctx->dict;
@@ -541,7 +541,7 @@ void _process_variable(const char* marker, const char* modifiers, _parse_context
 				// Find the first parse context up the chain with a valid
 				// template dictionary and modifier missing cb
 				_parse_context* this_ctx = ctx;
-				template_dictionary* dict = 0;
+				ngt_template* dict = 0;
 				while (this_ctx)	{
 					if (this_ctx && this_ctx->dict && this_ctx->dict->modifier_missing)	{
 						dict = this_ctx->dict;
@@ -650,7 +650,7 @@ void _process_section(const char* marker, _parse_context* ctx, int is_include)	{
 	
 	do {
 		section_ctx->last_expansion = (child && list_next(child) == 0) ? 1: 0;
-		section_ctx->dict = child? (template_dictionary*)list_data(child) : 0;
+		section_ctx->dict = child? (ngt_template*)list_data(child) : 0;
 		section_ctx->in_ptr = ctx->in_ptr;
 		saved_out_pos = ctx->out_sb->pos;
 			

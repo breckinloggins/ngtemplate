@@ -44,7 +44,7 @@ void _mod_cstring_escape(const char* name, const char* args, const char* marker,
  *
  * NOTE: This is mainly intended to be called for the Global Dictionary
  */
-void _init_standard_environment(template_dictionary* d)	{
+void _init_standard_environment(ngt_template* d)	{
 	ngt_set_string(d, "BI_SPACE", " ");
 	ngt_set_string(d, "BI_NEWLINE", "\n");
 	

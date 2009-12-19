@@ -12,7 +12,7 @@
  * next one.  This is due to the fragility of the parser, but since it's a test function, it's really not
  * worth fixing it.
  */
-char* read_in_dictionary(template_dictionary* d, int *line, int in_dictionary)	{
+char* read_in_dictionary(ngt_template* d, int *line, int in_dictionary)	{
 	// TODO:  This is one big hack of a function.  We should clean this up some time
 	
 	char marker[MAXMARKERLENGTH];
@@ -101,7 +101,7 @@ char* read_in_dictionary(template_dictionary* d, int *line, int in_dictionary)	{
 				exit(-1);
 			}
 			
-			template_dictionary* child = ngt_new();
+			ngt_template* child = ngt_new();
 			child->parent = d;
 			child->template = in_ptr;
 			ngt_add_dictionary(d, marker, child);
@@ -231,7 +231,7 @@ DEFINE_TEST_FUNCTION	{
 	}
 	
 	ngt_init();
-	template_dictionary* d = ngt_new();
+	ngt_template* d = ngt_new();
 	line = 1;
 	
 	ngt_load_from_file(d, in);
