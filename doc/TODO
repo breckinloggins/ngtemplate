@@ -1,5 +1,5 @@
-Version 0.1
------------
+Version 0.1 - Preview Release
+-----------------------------
 [X]	Iterator for hashtable
 [X]	Debug print of dictionary
 [X]	Test Framework: Read dictionary/template from file
@@ -25,7 +25,6 @@ Version 0.1
 [X]	Add template_load_from_file 
 [X]	Add support for Marker Missing and Modifier Missing callbacks
 [X]	Break up into multiple files
-[]	Support modifier args 
 [X]	Support builtin modifiers :none and :cstring_escape
 [X]	Add global dictionary
 [X]	Add BI_SPACE and BI_NEWLINE to global dictionary
@@ -33,25 +32,28 @@ Version 0.1
 [X]	Make sure all API names are as close as possible to the CTemplate counterparts
 [X]	Provide way to set the delimiters from code
 []  Add show/hide section
+[]	Support modifier args 
+[]	Properly support modifier chaining
 []	Create tool for turning template files into strings in C headers
 []	Make proper QUICKSTART documentation
 
-Version 0.2
------------
+Version 0.9 - Production Release Candidate
+------------------------------------------
+[]	Full threat analysis for security problems
 []	Add support for Pragmas, AUTOESCAPE
-[]	Support :html_escape, :pre_escape, :url_query_escape
+[]	:html_escape
+[]	:pre_escape
+[]	:url_query_escape
+[]	:javascript_escape
+[]	:json_escape
+[]	:cleanse_css
+[]	Rest of built-in CTemplate modifiers
+[]	Per-expand data
 []	Support template behaviors: DO_NOT_STRIP, STRIP_BLANK_LINES, STRIP_WHITESPACE
-
-Version 0.3
------------
-[]	Support :javascript_escape, :cleanse_css, :json_escape
-[]	Add Per-Expand Data feature
-
-Version 0.4
------------
-[]	Support rest of built-in CTemplate modifiers
-
-Version 0.5
------------
 []	Binary templates
 []	Template preprocess into data structure for faster application.  This way parsing overhead would only happen once
+
+Version 1.0 - Production Release
+--------------------------------
+[]	Fix bugs found/reported during Release Candidate testing
+[]	Performance and memory allocation study

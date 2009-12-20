@@ -92,6 +92,8 @@ Known Issues and Limitations for Version 0.1
 
 	- You cannot currently specify search directories for templates.  Calls to 
       template_set_filename() need to have absolute or resolvable relative paths to the template file
+	- Probably not UTF-8/Unicode compatible
+	- Probably susceptible to buffer overruns.  Haven't done a threat analysis yet.
 	- Pragmas (including AUTOESCAPE) are not currently supported
 	- Modifier support is not yet as capable as CTemplate:
 		- Modifiers are supported, but none are currently built-in except :none and :cstring_escape
