@@ -496,19 +496,26 @@ void _process_set_delimiter(_parse_context* ctx)	{
  */
 void _process_modifiers(const char* marker, const char* modifiers, const char* value, _parse_context* ctx)	{
 	int applied_modifier;
+	stringbuilder* sb;
 	
 	applied_modifier = 0;	
 	if (ctx->mode & MODE_MARKER_MODIFIER)	{
 		char *p;
-		p = (char*)modifiers;
+		char* cur_value;
 		
+		p = (char*)modifiers;
+		sb = sb_new();
+		cur_value = (char*)value;
+				
 		while (1)	{
 			char modifier[MAXMODIFIERLENGTH];
 			char args[MAXMODIFIERLENGTH];
 			int m;
 			char arg_separator;
-			_modifier* mod;
 			
+			_modifier* mod;
+			sb_reset(sb);
+									
 			// Modifier
 			m = 0;
 			while (m < MAXMODIFIERLENGTH && *p && *p != ':' && *p != '=')	{
@@ -543,8 +550,14 @@ void _process_modifiers(const char* marker, const char* modifiers, const char* v
 			
 			mod = _query_modifier(ctx->template, modifier);
 			if (mod)	{
-				mod->modifier(modifier, args, marker, value, ctx->out_sb);
+				mod->modifier(modifier, args, marker, cur_value, sb);
 				applied_modifier = 1;
+				
+				if (cur_value && cur_value != value)	{
+					free(cur_value);
+				}
+				cur_value = sb_make_cstring(sb);
+				
 			} else {
 				// Find the first parse context up the chain with a valid
 				// template dictionary and modifier missing cb
@@ -561,8 +574,13 @@ void _process_modifiers(const char* marker, const char* modifiers, const char* v
 
 				if (tpl && tpl->modifier_missing)	{
 					// Give user code a chance to fill in this value
-					tpl->modifier_missing(modifier, args, marker, value, ctx->out_sb);
+					tpl->modifier_missing(modifier, args, marker, cur_value, sb);
 					applied_modifier = 1;
+					
+					if (cur_value && cur_value != value)	{
+						free(cur_value);
+					}
+					cur_value = sb_make_cstring(sb);
 				} 
 			}
 			
@@ -570,11 +588,17 @@ void _process_modifiers(const char* marker, const char* modifiers, const char* v
 				break;
 			}
 		}
+		
+		if (cur_value && cur_value != value)	{
+			free(cur_value);
+		}
 	}
 	
 	if (!applied_modifier)	{
 		// Output the value ourselves
 		sb_append_str(ctx->out_sb, value);
+	} else {
+		sb_append_str(ctx->out_sb, sb_cstring(sb));
 	}
 }
 

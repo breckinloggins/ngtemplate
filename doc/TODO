@@ -33,7 +33,7 @@ Version 0.1 - Preview Release
 [X]	Provide way to set the delimiters from code
 [X]  Add show/hide section
 [X]	Support modifier args 
-[]	Properly support modifier chaining
+[X]	Properly support modifier chaining
 []	Create tool for turning template files into strings in C headers
 []	Make proper QUICKSTART documentation
 
