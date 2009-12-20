@@ -42,6 +42,35 @@ If all went well you should have libngtemplate.a and libuseful.a in your build d
 
 NOTE: CMake-less compilation and binary distributions will come eventually
 
+Usage
+-----
+
+Take a look at src/testing/template_test.c for an example of how to use the API.  There will be a nice
+update to QUICKSTART before Version 0.1 is released, but for now this is a good place to look.
+
+In a nutshell: 
+	char* output;
+	const char* tplstring = "Here, have a {{Template}}!";
+	
+	/* Init some structs */
+	ngt_template* template = ngt_new();
+	ngt_dictionary* dictionary = ngt_dictionary_new();
+	
+	/* Set some stuff in the dictionary */
+	ngt_set_string(dictionary, "Template", "Beer");
+	
+	/* Associate the template with the dictionary and expand the template */
+	ngt_set_dictionary(template, dictionary);
+	ngt_expand(tpl, &output);
+	
+	/* Should be "The template is: Here, have a Beer!" */
+	fprintf(stdout, "The template is: %s\n", output);
+	
+	/* Clean stuff up */
+	free(output);
+	ngt_destroy(template);
+	ngt_dictionary_destroy(dictionary);
+
 Differences from CTemplate
 --------------------------
 

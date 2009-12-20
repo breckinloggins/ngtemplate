@@ -178,13 +178,13 @@ int ngt_set_include_cb(ngt_dictionary* dict, const char* marker, get_template_fn
 int ngt_add_dictionary(ngt_dictionary* dict, const char* marker, ngt_dictionary* child);
 
 /**
- * Processes the given template according to the dictionary, putting the result in "result" pointer.
+ * Expands the given template according to the dictionary, putting the result in "result" pointer.
  * Sufficient space will be allocated for the result, and it will then be 
  * up to the caller to manage this memory
  *
  * Returns 0 if the template was successfully processed, -1 if there was an error
  */
-int ngt_process(ngt_template* tpl, char** result);
+int ngt_expand(ngt_template* tpl, char** result);
 
 /**
  * Returns that Global Dictionary in which the Standard Values for all templates are defined 

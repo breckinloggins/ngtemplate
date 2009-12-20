@@ -33,6 +33,7 @@ Version 0.1
 [X]	Decouple dictionaries from templates
 [X]	Make sure all API names are as close as possible to the CTemplate counterparts
 []	Create tool for turning template files into strings in C headers
+[]	Make proper QUICKSTART documentation
 
 Version 0.2
 -----------

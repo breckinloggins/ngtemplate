@@ -344,13 +344,13 @@ int ngt_add_dictionary(ngt_dictionary* dict, const char* marker, ngt_dictionary*
 }
 
 /**
- * Processes the given template according to the dictionary, putting the result in "result" pointer.
+ * Expands the given template according to the dictionary, putting the result in "result" pointer.
  * Sufficient space will be allocated for the result, and it will then be 
  * up to the caller to manage this space
  *
  * Returns 0 if the template was successfully processed, -1 if there was an error
  */
-int ngt_process(ngt_template* tpl, char** result)	{
+int ngt_expand(ngt_template* tpl, char** result)	{
 	int res;
 	_parse_context context;
 	char start_marker[2];

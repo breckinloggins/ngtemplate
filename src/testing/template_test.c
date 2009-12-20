@@ -250,7 +250,7 @@ DEFINE_TEST_FUNCTION	{
 		ngt_set_include_filename(dict, "Filename_Template", argv[3]);
 	}
 	
-	if (ngt_process(tpl, &result) < 0)	{
+	if (ngt_expand(tpl, &result) < 0)	{
 		return -1;
 	}
 	
