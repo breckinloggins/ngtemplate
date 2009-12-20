@@ -55,11 +55,12 @@ In a nutshell:
 	/* Init some structs */
 	ngt_template* template = ngt_new();
 	ngt_dictionary* dictionary = ngt_dictionary_new();
-	
+		
 	/* Set some stuff in the dictionary */
 	ngt_set_string(dictionary, "Template", "Beer");
 	
-	/* Associate the template with the dictionary and expand the template */
+	/* Associate the template with the dictionary and template string and expand the template */
+	template->template = tplstring;
 	ngt_set_dictionary(template, dictionary);
 	ngt_expand(tpl, &output);
 	
