@@ -11,6 +11,9 @@
 #define MAXMARKERLENGTH		64
 #define MAXMODIFIERLENGTH	128
 
+#define NGT_SECTION_VISIBLE	1
+#define NGT_SECTION_HIDDEN	0
+
 /* Pointer to a function that will return a pointer to a template string given its name */ 
 typedef char* (*get_template_fn)(const char* name);
 
@@ -37,7 +40,8 @@ typedef char* (*get_variable_fn)(const char* marker);
 
 typedef struct ngt_dictionary_tag	{
 	hashtable dictionary;
-	
+	int should_expand;							/* Determines whether the section represented by
+													this dictionary should be shown */
 	struct ngt_dictionary_tag* parent;
 } ngt_dictionary;
 
@@ -199,12 +203,22 @@ int ngt_set_include_cb(ngt_dictionary* dict, const char* marker, get_template_fn
 							cleanup_template_fn cleanup_template);
 
 /**
+ * Sets the visibility for the section indicated by "section" in the given dictionary
+ * 
+ * NOTE: visibility can be one of NGT_SECTION_VISIBLE, NGT_SECTION_HIDDEN
+ */
+void ngt_set_section_visibility(ngt_dictionary* dict, const char* section, int visibility);
+
+/**
  * Adds a child dictionary under the given marker.  If there is an existing dictionary under this marker, 
  * the new dictionary will be ADDED to the end of the list, NOT replace the old one
  *
+ * NOTE: Set visible to non-zero if you wish section to be shown automatically, zero if you wish to 
+ *		hide it and show later with ngt_show_section();
+ *
  * Returns 0 if the operation succeeded, -1 otherwise
  */
-int ngt_add_dictionary(ngt_dictionary* dict, const char* marker, ngt_dictionary* child);
+int ngt_add_dictionary(ngt_dictionary* dict, const char* marker, ngt_dictionary* child, int visible);
 
 /**
  * Expands the given template according to the dictionary, putting the result in "result" pointer.

@@ -10,7 +10,7 @@
 /**
  * The hash function we will use for the template dictionary
  */
-int _dictionary_hash(const void* key)	{
+int _dictionary_item_hash(const void* key)	{
 	// Hash by the marker value
 	return ht_hashpjw(((_dictionary_item*)key)->marker);
 }
@@ -18,14 +18,14 @@ int _dictionary_hash(const void* key)	{
 /**
  * The function we will use to determine if two dictionary_items match
  */
-int _dictionary_match(const void* key1, const void* key2)	{
+int _dictionary_item_match(const void* key1, const void* key2)	{
 	return !strcmp(((_dictionary_item*)key1)->marker, ((_dictionary_item*)key2)->marker);
 }
 
 /**
  * The function that will be called when a dictionary_item must be destroyed
  */
-void _dictionary_destroy(void *data)	{
+void _dictionary_item_destroy(void *data)	{
 	_dictionary_item* d = (_dictionary_item*)data;
 	
 	if (d->type == ITEM_STRING)	{
@@ -44,8 +44,21 @@ void _dictionary_destroy(void *data)	{
 		}
 	}
 	
-	free(d->marker);
+	if (d->marker)	{
+		free(d->marker);
+	}
+	
 	free(d);
+}
+
+/**
+ * The function that will be called when an ngt_dictionary must be destroyed
+ */ 
+void _dictionary_destroy(void* data)	{
+	ngt_dictionary* dict = (ngt_dictionary*)data;
+	
+	ht_destroy((hashtable*)dict);
+	free(dict);
 }
 
 /**
@@ -191,6 +204,7 @@ _dictionary_item* _query_item(ngt_dictionary* dict, const char* marker)	{
 	}
 	
 	query_item = (_dictionary_item*)malloc(sizeof(_dictionary_item));
+	memset(query_item, 0, sizeof(_dictionary_item));
 	query_item->marker = (char*)marker;
 	query_item->val.string_value = 0;
 	
@@ -654,7 +668,7 @@ void _process_section(const char* marker, _parse_context* ctx, int is_include)	{
 			exit(-1);
 		}
 			
-		if (!child)	{
+		if (!section_ctx->active_dictionary || !section_ctx->active_dictionary->should_expand)	{
 			// We only use the output if we had an actual dictionary, else we have to throw it 
 			// out because we didn't ultimately expand anything
 			ctx->out_sb->pos = saved_out_pos;

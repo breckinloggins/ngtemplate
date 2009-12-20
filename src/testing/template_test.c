@@ -101,7 +101,7 @@ char* read_in_dictionary(ngt_dictionary* d, char* in_ptr, int *line, int in_dict
 			}
 			
 			ngt_dictionary* child = ngt_dictionary_new();
-			ngt_add_dictionary(d, marker, child);
+			ngt_add_dictionary(d, marker, child, NGT_SECTION_VISIBLE);
 			in_ptr = read_in_dictionary(child, in_ptr, line, 1);
 			continue;
 		}
@@ -243,6 +243,8 @@ DEFINE_TEST_FUNCTION	{
 	ngt_set_stringf(dict, "FmtString", "(%d, %f, 0x%x, %s, %s some more %d)", 
 		42, 3.14159, 0xdeadbeef, "A String", "Another String", -72 );
 	ngt_set_int(dict, "IntValue", 12345);	// I have the same combination on my luggage
+	
+	ngt_set_section_visibility(dict, "HiddenSection", NGT_SECTION_HIDDEN);
 	
 	ngt_set_dictionary(tpl, dict);
 	

@@ -57,15 +57,17 @@ ngt_template* ngt_new()	{
 }
 
 /**
- * Creates a new ngt Template Dictionary, ready to be filled with values
+ * Creates a new ngt Template Dictionary, ready to be filled with values 
  */
 ngt_dictionary* ngt_dictionary_new()	{
 	ngt_dictionary* d = (ngt_dictionary*)malloc(sizeof(ngt_dictionary));
 	memset(d, 0, sizeof(ngt_dictionary));
 	
+	d->should_expand = NGT_SECTION_VISIBLE;
+	
 	// NOTE: Adjust the buckets parameter depending on how many markers are likely to be in a template
 	//		file (then adjust upward to the next prime number
-	ht_init((hashtable*)d, 197, _dictionary_hash, _dictionary_match, _dictionary_destroy);
+	ht_init((hashtable*)d, 197, _dictionary_item_hash, _dictionary_item_match, _dictionary_item_destroy);
 	
 	return d;	
 }
@@ -81,8 +83,7 @@ void ngt_destroy(ngt_template* tpl)	{
  * Destroys the given template dictionary and any sub-dictionaries
  */
 void ngt_dictionary_destroy(ngt_dictionary* dict)	{
-	ht_destroy((hashtable*)dict);
-	free(dict);
+	_dictionary_destroy((void*)dict);
 }
 
 /**
@@ -346,22 +347,46 @@ int ngt_set_include_filename(ngt_dictionary* dict, const char* marker, const cha
 }
 
 /**
+ * Sets the visibility for the section indicated by "section" in the given dictionary
+ * 
+ * NOTE: visibility can be one of NGT_SECTION_VISIBLE, NGT_SECTION_HIDDEN
+ */
+void ngt_set_section_visibility(ngt_dictionary* dict, const char* section, int visibility)	{
+	list_element* child;
+	const list* d_list = _get_dictionary_list_ref(dict, section);
+	
+	child = 0;
+	if (d_list)	{
+		child = list_head(d_list);
+	} else {
+		return;
+	}
+	
+	for (child = list_head(d_list); child; child = list_next(child))	{
+		((ngt_dictionary*)list_data(child))->should_expand = visibility;
+	}
+}
+
+/**
  * Adds a child dictionary under the given marker.  If there is an existing dictionary under this marker, 
  * the new dictionary will be ADDED to the end of the list, NOT replace the old one
  *
+ * NOTE: Set visible to non-zero if you wish section to be shown automatically, zero if you wish to 
+ *		hide it and show later with ngt_show_section();
+ *
  * Returns 0 if the operation succeeded, -1 otherwise
  */
-int ngt_add_dictionary(ngt_dictionary* dict, const char* marker, ngt_dictionary* child)	{
+int ngt_add_dictionary(ngt_dictionary* dict, const char* marker, ngt_dictionary* child, int visible)	{
 	_dictionary_item* item, *prev_item;
 	
 	item = (_dictionary_item*)malloc(sizeof(_dictionary_item));
+	memset(item, 0, sizeof(_dictionary_item));
 	item->type = ITEM_D_LIST;
 	item->marker = (char*)malloc(strlen(marker) + 1);
 	
 	strcpy(item->marker, marker);
 	
 	if (ht_insert((hashtable*)dict, item) == 1)	{
-		
 		// Already in the table, add to it
 		prev_item = item;
 		ht_lookup((hashtable*)dict, (void*)&prev_item);
@@ -381,8 +406,8 @@ int ngt_add_dictionary(ngt_dictionary* dict, const char* marker, ngt_dictionary*
 	}
 	
 	list_insert_next(item->val.d_list_value, list_tail(item->val.d_list_value), child);
+	child->should_expand = visible;
 	child->parent = dict;
-	
 	return 0;
 }
 

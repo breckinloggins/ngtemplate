@@ -104,17 +104,22 @@ typedef struct _parse_context_tag	{
 /**
  * The hash function we will use for the template dictionary
  */
-int _dictionary_hash(const void* key);
+int _dictionary_item_hash(const void* key);
 
 /**
  * The function we will use to determine if two dictionary_items match
  */
-int _dictionary_match(const void* key1, const void* key2);	
+int _dictionary_item_match(const void* key1, const void* key2);	
 
 /**
  * The function that will be called when a dictionary_item must be destroyed
  */
-void _dictionary_destroy(void *data);
+void _dictionary_item_destroy(void *data);
+
+/**
+ * The function that will be called when an ngt_dictionary must be destroyed
+ */ 
+void _dictionary_destroy(void* data);
 
 /**
  * The hash function we will use for the modifier dictionary

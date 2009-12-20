@@ -31,7 +31,7 @@ Version 0.1 - Preview Release
 [X]	Decouple dictionaries from templates
 [X]	Make sure all API names are as close as possible to the CTemplate counterparts
 [X]	Provide way to set the delimiters from code
-[]  Add show/hide section
+[X]  Add show/hide section
 []	Support modifier args 
 []	Properly support modifier chaining
 []	Create tool for turning template files into strings in C headers
