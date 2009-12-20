@@ -135,6 +135,37 @@ int ngt_load_from_filename(ngt_template* tpl, const char* filename)	{
 }
 
 /**
+ * Sets the default start and end delimiters for the given template
+ *
+ * NOTES:
+ *  - Each delimiter must have at least one character
+ *  - Delimiters with more than 8 characters will be truncated
+ *  - Delimiters can still be overridden inside the template 
+ */
+void ngt_set_delimiters(ngt_template* tpl, const char* start_delimiter, const char* end_delimiter)	{
+	int i;
+	
+	if (!start_delimiter || !end_delimiter || strlen(start_delimiter) < 1 || strlen(end_delimiter) < 1)	{
+		// Gotta have somethin, man...
+		return;
+	}
+	
+	i = 0;
+	for (i = 0; i < MAX_DELIMITER_LENGTH && i < strlen(start_delimiter); i++)	{
+		tpl->start_delimiter.literal[i] = start_delimiter[i];
+	}
+	tpl->start_delimiter.literal[i] = '\0';
+	tpl->start_delimiter.length = i;
+
+	i = 0;
+	for (i = 0; i < MAX_DELIMITER_LENGTH && i < strlen(end_delimiter); i++)	{
+		tpl->end_delimiter.literal[i] = end_delimiter[i];
+	}
+	tpl->end_delimiter.literal[i] = '\0';
+	tpl->end_delimiter.length = i;
+}
+
+/**
  * Sets a modifier function that will be called when a modifier in the template does not
  * resolve to any known modifiers.  The function will have the opportunity to adjust the output
  * of the marker, and will be passed any arguments.
@@ -150,6 +181,18 @@ void ngt_set_modifier_missing_cb(ngt_template* tpl, modifier_fn mod_fn)	{
  */
 void ngt_set_variable_missing_cb(ngt_template* tpl, get_variable_fn get_fn)	{
 	tpl->variable_missing = get_fn;
+}
+
+/**
+ * Returns nonzero if the variable with the given marker name equals str, zero otherwise
+ */
+int ngt_variable_equals(ngt_dictionary* dict, const char* marker, const char* str)	{
+	const char* value = _get_string_value_ref(dict, marker);
+	if (!value)	{
+		return 0;
+	}
+	
+	return !strcmp(value, str);
 }
 
 /**
@@ -359,13 +402,14 @@ int ngt_expand(ngt_template* tpl, char** result)	{
 	memset(&context, 0, sizeof(_parse_context));	
 	context.current_section = "";
 	
-	strcpy(context.start_delimiter.literal, "{{");
-	context.start_delimiter.length = 2;
-	strcpy(context.end_delimiter.literal, "}}");
-	context.end_delimiter.length = 2;
+	if (tpl->start_delimiter.length == 0 && tpl->end_delimiter.length == 0)	{
+		ngt_set_delimiters(tpl, "{{", "}}");
+	}
 	
 	context.template = tpl;
 	context.active_dictionary = tpl->dictionary;
+	_copy_delimiter(&context.active_start_delimiter, &tpl->start_delimiter);
+	_copy_delimiter(&context.active_end_delimiter, &tpl->end_delimiter);
 	context.in_ptr = (char*)tpl->template;
 	context.template_line = 1;
 	

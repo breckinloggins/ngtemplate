@@ -27,11 +27,12 @@ Version 0.1
 [X]	Break up into multiple files
 []	Support modifier args 
 [X]	Support builtin modifiers :none and :cstring_escape
-[]  Add show/hide section
 [X]	Add global dictionary
 [X]	Add BI_SPACE and BI_NEWLINE to global dictionary
 [X]	Decouple dictionaries from templates
 [X]	Make sure all API names are as close as possible to the CTemplate counterparts
+[X]	Provide way to set the delimiters from code
+[]  Add show/hide section
 []	Create tool for turning template files into strings in C headers
 []	Make proper QUICKSTART documentation
 

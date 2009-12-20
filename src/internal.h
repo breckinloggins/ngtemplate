@@ -63,17 +63,6 @@ typedef struct _dictionary_item_tag	{
 	} val;
 } _dictionary_item;
 
-// Represents a start or stop marker delimiter
-#define MAX_DELIMITER_LENGTH	8				/* I really don't know why someone would want a 
-											 		delimiter this long, but just in case */
-typedef struct _delimiter_tag	{
-	int length;
-	char literal[MAX_DELIMITER_LENGTH];			/* Keep the literal as the last record in the 
-													struct so people can do the "overallocated 
-													struct" trick if they need more than 
-													MAX_DELIMITER_LENGTH */
-} _delimiter;
-
 // Represents a marker modifier
 typedef struct _modifier_tag	{
 	char* name;								// The name that will be used to call the modifier
@@ -92,8 +81,9 @@ typedef struct _parse_context_tag	{
 											// 	section expansions.  Used for separator logic
 	ngt_template* template;					// The current template
 	ngt_dictionary* active_dictionary;		// The curently active dictionary
-	_delimiter start_delimiter;				// Characters that signify start of a marker
-	_delimiter end_delimiter;				// Characters that signify end of a marker
+	
+	delimiter active_start_delimiter;		// The current start delimiter
+	delimiter active_end_delimiter;			// The current end delimiter
 	
 	int		template_line;					// Line number in the current source template
 	char* 	in_ptr;							// Where we are in the template
@@ -220,17 +210,17 @@ struct _include_params_tag* _get_include_params_ref(ngt_dictionary* dict, const 
  * Helper function - returns nonzero if the portion of the input string starting at p matches the given
  * marker, 0 otherwise
  */
-int _match_marker(const char* p, _delimiter* delim);
+int _match_marker(const char* p, delimiter* delim);
 
 /**
  * Helper function. Copies the data from the source delimiter into dest
  */
-void _copy_delimiter(_delimiter* dest, const _delimiter* src);
+void _copy_delimiter(delimiter* dest, const delimiter* src);
 	
 /**
  * Helper function.  Returns a freshly allocated copy of the given delimiter
  */
-_delimiter* _duplicate_delimiter(const _delimiter* delim);	
+delimiter* _duplicate_delimiter(const delimiter* delim);	
 
 /**
  * Helper function - assuming that p points to the character after '<start delim>=', reads the string up 
@@ -238,7 +228,7 @@ _delimiter* _duplicate_delimiter(const _delimiter* delim);
  *
  * Returns the adjusted character pointer, pointing to one after the last position processed
  */
-char* _extract_delimiter(const char* p, _delimiter* delim);
+char* _extract_delimiter(const char* p, delimiter* delim);
 
 /**
  * Helper function - creates a new context and duplicates the contents of the given context

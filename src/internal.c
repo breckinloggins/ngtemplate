@@ -333,7 +333,7 @@ struct _include_params_tag* _get_include_params_ref(ngt_dictionary* dict, const 
  * Helper function - returns nonzero if the portion of the input string starting at p matches the given
  * marker, 0 otherwise
  */
-int _match_marker(const char* p, _delimiter* delim)	{
+int _match_marker(const char* p, delimiter* delim)	{
 	int i;
 	
 	i = 0;
@@ -347,7 +347,7 @@ int _match_marker(const char* p, _delimiter* delim)	{
 /**
  * Helper function. Copies the data from the source delimiter into dest
  */
-void _copy_delimiter(_delimiter* dest, const _delimiter* src)	{
+void _copy_delimiter(delimiter* dest, const delimiter* src)	{
 	if (!dest || !src)	{
 		return;
 	}
@@ -359,10 +359,10 @@ void _copy_delimiter(_delimiter* dest, const _delimiter* src)	{
 /**
  * Helper function.  Returns a freshly allocated copy of the given delimiter
  */
-_delimiter* _duplicate_delimiter(const _delimiter* delim)	{
-	_delimiter* new_delim;
+delimiter* _duplicate_delimiter(const delimiter* delim)	{
+	delimiter* new_delim;
 	
-	new_delim = (_delimiter*)malloc(sizeof(_delimiter));
+	new_delim = (delimiter*)malloc(sizeof(delimiter));
 	_copy_delimiter(new_delim, delim);
 	
 	return new_delim;
@@ -374,7 +374,7 @@ _delimiter* _duplicate_delimiter(const _delimiter* delim)	{
  *
  * Returns the adjusted character pointer, pointing to one after the last position processed
  */
-char* _extract_delimiter(const char* p, _delimiter* delim)	{
+char* _extract_delimiter(const char* p, delimiter* delim)	{
 	int length;
 	
 	length = 0;
@@ -440,24 +440,24 @@ void _append_line_whitespace(_parse_context* line_ctx, _parse_context* out_ctx)	
  * Helper function - Processes a set delimiter {{= =}} sequence in the template
  */
 void _process_set_delimiter(_parse_context* ctx)	{
-	ctx->in_ptr = _extract_delimiter(ctx->in_ptr, &(ctx->start_delimiter));
+	ctx->in_ptr = _extract_delimiter(ctx->in_ptr, &(ctx->active_start_delimiter));
 	EAT_SPACES(ctx->in_ptr);
 	
 	// OK now we should either be at the new end delimiter or an =
 	if (*ctx->in_ptr == '=')	{
 		ctx->in_ptr++;
-		if (!_match_marker(ctx->in_ptr, &(ctx->end_delimiter)))	{
+		if (!_match_marker(ctx->in_ptr, &(ctx->active_end_delimiter)))	{
 			fprintf(stderr, "Unexpected '=' in middle of Set Delimiter\n");
 			exit(-1);
 		}
 		
-		ctx->in_ptr += ctx->end_delimiter.length;
+		ctx->in_ptr += ctx->active_end_delimiter.length;
 		
 		// In these cases, the start and end delimiters are the same
-		_copy_delimiter(&(ctx->end_delimiter), &(ctx->start_delimiter));
+		_copy_delimiter(&(ctx->active_end_delimiter), &(ctx->active_start_delimiter));
 	} else {
-		_delimiter* old_end_delimiter = _duplicate_delimiter(&(ctx->end_delimiter));
-		ctx->in_ptr = _extract_delimiter(ctx->in_ptr, &(ctx->end_delimiter));
+		delimiter* old_end_delimiter = _duplicate_delimiter(&ctx->active_end_delimiter);
+		ctx->in_ptr = _extract_delimiter(ctx->in_ptr, &(ctx->active_end_delimiter));
 		EAT_SPACES(ctx->in_ptr);
 		
 		if (*ctx->in_ptr != '=')	{
@@ -731,11 +731,11 @@ char* _process(_parse_context *ctx)	{
 				ctx->mode = MODE_NORMAL;
 				continue;
 
-			} else if (_match_marker(ctx->in_ptr, &(ctx->end_delimiter)))	{
+			} else if (_match_marker(ctx->in_ptr, &(ctx->active_end_delimiter)))	{
 				// At the end of the marker
 				marker[m] = '\0';
 				modifiers[mod] = '\0';
-				ctx->in_ptr += ctx->end_delimiter.length;
+				ctx->in_ptr += ctx->active_end_delimiter.length;
 				
 				if (ctx->mode & MODE_MARKER_VARIABLE)	{
 					_process_variable(marker, modifiers, ctx);
@@ -814,8 +814,8 @@ char* _process(_parse_context *ctx)	{
 			continue;
 		}
 		
-		if (_match_marker(ctx->in_ptr, &(ctx->start_delimiter)))	{
-			ctx->in_ptr += ctx->start_delimiter.length;	// Skip over those characters
+		if (_match_marker(ctx->in_ptr, &(ctx->active_start_delimiter)))	{
+			ctx->in_ptr += ctx->active_start_delimiter.length;	// Skip over those characters
 			ctx->mode = MODE_MARKER;
 			memset(marker, 0, MAXMARKERLENGTH);
 			memset(modifiers, 0, MAXMODIFIERLENGTH);

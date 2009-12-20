@@ -41,6 +41,17 @@ typedef struct ngt_dictionary_tag	{
 	struct ngt_dictionary_tag* parent;
 } ngt_dictionary;
 
+// Represents a start or stop marker delimiter
+#define MAX_DELIMITER_LENGTH	8				/* I really don't know why someone would want a 
+											 		delimiter this long, but just in case */
+typedef struct delimiter_tag	{
+	int length;
+	char literal[MAX_DELIMITER_LENGTH];			/* Keep the literal as the last record in the 
+													struct so people can do the "overallocated 
+													struct" trick if they need more than 
+													MAX_DELIMITER_LENGTH */
+} delimiter;
+
 typedef struct ngt_template_tag	{
 	ngt_dictionary* dictionary;					
 	
@@ -48,6 +59,9 @@ typedef struct ngt_template_tag	{
 	
 	char*	template;
 	
+	delimiter start_delimiter;					/* Characters that signify start of a marker */
+	delimiter end_delimiter;					/* Characters that signify end of a marker */
+		
 	modifier_fn			modifier_missing;
 	get_variable_fn		variable_missing;
 } ngt_template;
@@ -95,6 +109,16 @@ int ngt_load_from_file(ngt_template* tpl, FILE* fp);
 int ngt_load_from_filename(ngt_template* tpl, const char* filename);
 
 /**
+ * Sets the default start and end delimiters for the given template
+ *
+ * NOTES:
+ *  - Each delimiter must have at least one character
+ *  - Delimiters with more than 8 characters will be truncated
+ *  - Delimiters can still be overridden inside the template 
+ */
+void ngt_set_delimiters(ngt_template* tpl, const char* start_delimiter, const char* end_delimiter);
+
+/**
  * Sets a modifier function that can be called when the given modifier name is encountered
  * in the template.  The modifier will have the opportunity to adjust the output of the 
  * marker, and will be passed in any arguments.  If another modifier is already present with
@@ -117,6 +141,11 @@ void ngt_set_modifier_missing_cb(ngt_template* tpl, modifier_fn mod_fn);
  * to the out_sb string builder.
  */
 void ngt_set_variable_missing_cb(ngt_template* tpl, get_variable_fn get_fn);
+
+/**
+ * Returns nonzero if the variable with the given marker name equals str, zero otherwise
+ */
+int ngt_variable_equals(ngt_dictionary* dict, const char* marker, const char* str);
 
 /**
  * Sets a string value in the template dictionary.  Any instance of "marker" in the template 
