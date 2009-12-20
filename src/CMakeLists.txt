@@ -4,9 +4,11 @@ PROJECT(ngtemplate)
 SUBDIRS(../lib/libuseful/src)
 
 SET(ngtemplate_LIB_SRCS
+	internal.h
 	internal.c
 	stdenv.c
 	ngtemplate.c
+	include/ngtemplate.h
 )
 
 ADD_LIBRARY(ngtemplate STATIC ${ngtemplate_LIB_SRCS})
