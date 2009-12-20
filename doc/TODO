@@ -39,6 +39,9 @@ Version 0.1 - Preview Release
 
 Version 0.9 - Production Release Candidate
 ------------------------------------------
+[]	ngtembed
+	[]	Add test harness
+	[]	Support setting different output template
 []	Full threat analysis for security problems
 []	Add support for Pragmas, AUTOESCAPE
 []	Modifiers should support includes

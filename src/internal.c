@@ -94,9 +94,7 @@ void _destroy_template(void* data)	{
 	ngt_template* tpl = (ngt_template*)data;
 	
 	ht_destroy(&tpl->modifiers);
-	if (tpl->template)	{
-		free(tpl->template);
-	}
+	
 	free(tpl);
 }
 
@@ -552,6 +550,7 @@ void _process_modifiers(const char* marker, const char* modifiers, const char* v
 			if (mod)	{
 				mod->modifier(modifier, args, marker, cur_value, sb);
 				applied_modifier = 1;
+				sb_append_ch(sb, '\0');
 				
 				if (cur_value && cur_value != value)	{
 					free(cur_value);
@@ -576,6 +575,7 @@ void _process_modifiers(const char* marker, const char* modifiers, const char* v
 					// Give user code a chance to fill in this value
 					tpl->modifier_missing(modifier, args, marker, cur_value, sb);
 					applied_modifier = 1;
+					sb_append_ch(sb, '\0');
 					
 					if (cur_value && cur_value != value)	{
 						free(cur_value);
@@ -721,6 +721,8 @@ void _process_section(const char* marker, _parse_context* ctx, int is_include)	{
 		saved_out_pos = ctx->out_sb->pos;
 			
 		resume = _process(section_ctx);
+		sb_append_ch(ctx->out_sb, '\0');
+		ctx->out_sb->pos--;
 						
 		if (resume < 0)	{
 			// There was an error in the inner section

@@ -440,6 +440,7 @@ int ngt_expand(ngt_template* tpl, char** result)	{
 	
 	context.out_sb = sb_new_with_size(1024);
 	res = _process(&context) > 0;
+	sb_append_ch(context.out_sb, '\0');
 	
 	*result = sb_cstring(context.out_sb);
 	sb_destroy(context.out_sb, 0);

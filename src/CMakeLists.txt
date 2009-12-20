@@ -14,6 +14,9 @@ SET(ngtemplate_LIB_SRCS
 ADD_LIBRARY(ngtemplate STATIC ${ngtemplate_LIB_SRCS})
 TARGET_LINK_LIBRARIES(ngtemplate useful)
 
+ADD_EXECUTABLE(ngtembed ngtembed.c)
+TARGET_LINK_LIBRARIES(ngtembed useful ngtemplate)
+
 ENABLE_TESTING()
 
 ADD_EXECUTABLE(template_test testing/template_test.c)
