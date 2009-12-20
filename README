@@ -86,6 +86,14 @@ Differences from CTemplate
       if the including template has a dictionary entry with that name
 	- Includes a built-in modifier called :cstring_escape that turns newlines into \n, tabs into \t, 
       quotes into \", and so forth
+	- Modifier semantics are a little different than they are in CTemplate:
+		- Custom modifiers don't require an x- prefix
+		- You can override the built-in modifiers
+		- Syntax for modifier arguments are more consistent: for all modifiers you must start an 
+          arg list with '='.  In CTemplate the semantics for custom modifiers are different than
+          built-ins.  For backward compatibility with CTemplate, modifiers that start with x- treat
+          the first thing following the next colon as modifier arguments, just like in CTemplate
+		- You can chain custom modifiers together just like built-in modifiers
 
 Known Issues and Limitations for Version 0.1
 --------------------------------------------
@@ -97,8 +105,7 @@ Known Issues and Limitations for Version 0.1
 	- Pragmas (including AUTOESCAPE) are not currently supported
 	- Modifier support is not yet as capable as CTemplate:
 		- Modifiers are supported, but none are currently built-in except :none and :cstring_escape
-		- Modifiers are supported on values only, not sections or includes
-		- Modifiers do not currently support arguments
+		- Modifiers are not yet supported on includes
 	- Per-expand-data and custom emitters are not currently supported
 	- Custom delimiters are supported (via {{= =}}), but they cannot be more than 8 characters long
 	- Repeatedly generating output from the same template is slower than it needs to be, because we 

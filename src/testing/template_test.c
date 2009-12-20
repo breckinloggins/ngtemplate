@@ -191,13 +191,17 @@ void modifier_cb(const char* name, const char* args, const char* marker, const c
 }
 
 void missing_modifier_cb(const char* name, const char* args, const char* marker, const char* value, stringbuilder* out_sb)	{
-	if (strcmp(name, "DynModifier"))	{
-		// This one doesn't concern us
+	if (!strcmp(name, "DynModifier"))	{
+		sb_append_str(out_sb, value);
+		sb_append_str(out_sb, " + C");		
+	} else if (!strcmp(name, "modifier_with_args") || !strcmp(name, "x-modifier"))	{
+		// Just echo them
+		sb_append_str(out_sb, args);
+	} else {
+		sb_append_str(out_sb, value);
 		return;
 	}
 	
-	sb_append_str(out_sb, value);
-	sb_append_str(out_sb, " + C");
 }
 
 char* variable_missing_cb(const char* marker)	{

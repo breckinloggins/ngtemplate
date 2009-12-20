@@ -490,12 +490,99 @@ void _process_set_delimiter(_parse_context* ctx)	{
 	}
 }
 
+/*
+ * Helper function - Given a marker with modifiers and the original value, parses the modifiers and 
+ *                   runs them
+ */
+void _process_modifiers(const char* marker, const char* modifiers, const char* value, _parse_context* ctx)	{
+	int applied_modifier;
+	
+	applied_modifier = 0;	
+	if (ctx->mode & MODE_MARKER_MODIFIER)	{
+		char *p;
+		p = (char*)modifiers;
+		
+		while (1)	{
+			char modifier[MAXMODIFIERLENGTH];
+			char args[MAXMODIFIERLENGTH];
+			int m;
+			char arg_separator;
+			_modifier* mod;
+			
+			// Modifier
+			m = 0;
+			while (m < MAXMODIFIERLENGTH && *p && *p != ':' && *p != '=')	{
+				modifier[m++] = *p++;
+			}
+			modifier[m] = '\0';
+			
+			// HACK: In CTemplate, custom modifiers MUST start with x-.  When they do, the following
+			// "modifier" is not actually a modifier at all, but the ARGUMENTS to the modifier!
+			//
+			// This is silly (why didn't they just follow the '=' convention like with built-ins?!), 
+			// but we treat it here for backward-compatibility
+			arg_separator = '=';
+			if (modifier[0] == 'x' && modifier[1] == '-' && *p == ':')	{
+				// CTemplate-style custom modifier, change the arg separator
+				arg_separator = ':';
+				p++;	// Skip over the ':' so the args parser below thinks it's encountered
+						// and equals sign
+			}
+			
+			// Args
+			m = 0;
+			while (m < MAXMODIFIERLENGTH && *p && *p != ':')	{
+				if (*p == '=' && arg_separator == '=')	{
+					p++;
+					continue;
+				}
+				
+				args[m++] = *p++;
+			}
+			args[m] = '\0';
+			
+			mod = _query_modifier(ctx->template, modifier);
+			if (mod)	{
+				mod->modifier(modifier, args, marker, value, ctx->out_sb);
+				applied_modifier = 1;
+			} else {
+				// Find the first parse context up the chain with a valid
+				// template dictionary and modifier missing cb
+				_parse_context* this_ctx = ctx;
+				ngt_template* tpl = 0;
+				while (this_ctx)	{
+					if (this_ctx && this_ctx->template && this_ctx->template->modifier_missing)	{
+						tpl = this_ctx->template;
+						break;
+					}
+
+					this_ctx = this_ctx->parent;
+				}
+
+				if (tpl && tpl->modifier_missing)	{
+					// Give user code a chance to fill in this value
+					tpl->modifier_missing(modifier, args, marker, value, ctx->out_sb);
+					applied_modifier = 1;
+				} 
+			}
+			
+			if (*p++ != ':')	{
+				break;
+			}
+		}
+	}
+	
+	if (!applied_modifier)	{
+		// Output the value ourselves
+		sb_append_str(ctx->out_sb, value);
+	}
+}
+
 /**
  * Helper function - Expands a variable marker in the template
  */
 void _process_variable(const char* marker, const char* modifiers, _parse_context* ctx)	{
 	char* value;
-	int applied_modifier;
 	
 	value = (char*)_get_string_value_ref(ctx->active_dictionary, marker);
 	if (!value) {
@@ -523,58 +610,7 @@ void _process_variable(const char* marker, const char* modifiers, _parse_context
 		}
 	}
 	
-	applied_modifier = 0;	
-	if (ctx->mode & MODE_MARKER_MODIFIER)	{
-		char *p;
-		p = (char*)modifiers;
-		
-		while (1)	{
-			char modifier[MAXMODIFIERLENGTH];
-			int m;
-			_modifier* mod;
-			
-			m = 0;
-			while (*p && *p != ':')	{
-				modifier[m++] = *p++;
-			}
-			modifier[m] = '\0';
-			
-			mod = _query_modifier(ctx->template, modifier);
-			if (mod)	{
-				mod->modifier(modifier, "", marker, value, ctx->out_sb);
-				applied_modifier = 1;
-			} else {
-				// Find the first parse context up the chain with a valid
-				// template dictionary and modifier missing cb
-				_parse_context* this_ctx = ctx;
-				ngt_template* tpl = 0;
-				while (this_ctx)	{
-					if (this_ctx && this_ctx->template && this_ctx->template->modifier_missing)	{
-						tpl = this_ctx->template;
-						break;
-					}
-
-					this_ctx = this_ctx->parent;
-				}
-
-				if (tpl && tpl->modifier_missing)	{
-					// Give user code a chance to fill in this value
-					tpl->modifier_missing(modifier, "", marker, value, ctx->out_sb);
-					applied_modifier = 1;
-				} 
-			}
-			
-			if (*p++ != ':')	{
-				break;
-			}
-		}
-	}
-	
-	if (!applied_modifier)	{
-		// Output the value ourselves
-		sb_append_str(ctx->out_sb, value);
-	}
-		
+	_process_modifiers(marker, modifiers, value, ctx);
 }
 
 /**

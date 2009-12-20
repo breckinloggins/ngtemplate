@@ -250,6 +250,12 @@ void _append_line_whitespace(_parse_context* line_ctx, _parse_context* out_ctx);
  */
 void _process_set_delimiter(_parse_context* ctx);
 
+/*
+ * Helper function - Given a marker with modifiers and the original value, parses the modifiers and 
+ *                   runs them
+ */
+void _process_modifiers(const char* marker, const char* modifiers, const char* value, _parse_context* ctx);
+
 /**
  * Helper function - Expands a variable marker in the template
  */
