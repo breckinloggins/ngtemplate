@@ -1,6 +1,6 @@
 ngtemplate - A template engine written in C designed to be syntax-compatible with Google CTemplate, released under the MIT license
 
-Version 0.1-ish, so there's plenty more work to do. 
+Version 0.1, so there's plenty more work to do. 
 
 Introduction
 ------------
@@ -44,9 +44,6 @@ NOTE: CMake-less compilation and binary distributions will come eventually
 
 Usage
 -----
-
-Take a look at src/testing/template_test.c for an example of how to use the API.  There will be a nice
-update to QUICKSTART before Version 0.1 is released, but for now this is a good place to look.
 
 In a nutshell: 
 	char* output;

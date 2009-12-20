@@ -34,11 +34,15 @@ Version 0.1 - Preview Release
 [X]  Add show/hide section
 [X]	Support modifier args 
 [X]	Properly support modifier chaining
-[]	Create tool for turning template files into strings in C headers
-[]	Make proper QUICKSTART documentation
+[X]	Create tool for turning template files into strings in C headers
+[X]	Make proper QUICKSTART documentation
 
 Version 0.9 - Production Release Candidate
 ------------------------------------------
+[]	Better documentation
+[]	Project web page
+[]	Windows support
+[]	Downloadable binaries
 []	ngtembed
 	[]	Add test harness
 	[]	Support setting different output template

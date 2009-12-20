@@ -1,88 +1,28 @@
-Anatomy of a Template
----------------------
+Take a look at src/testing/template_test.c for an example of how to use the API.  Another place to look that uses ngtemplate "in real life" is the ngtembed tool at src/ngtembed.c.
 
-A template is a string with literal text and markers.  All literal text is output verbatim
-by the template engine and is not modified in any way.  Markers are evaluated and replaced
-depending on their type and the contents of the template dictionary.
-
-Variable Markers
-----------------
-
-Markers that look like {{This}} are variable markers.  When ngtemplate encounters a variable
-marker, it will look up the marker in the data dictionary.  If it finds a match, the marker
-will be replaced by the text in the dictionary.  If the marker cannot be found in the dictionary, 
-the marker will be erased from the output.
-
-Section Markers
----------------
-
-A Section looks like:
-
-{{#Person}}
-	Name: {{Name}}
-	Age: {{Age}}
-	Favorite Color: {{Color}}
+In a Nutshell
+-------------
+ 
+	char* output;
+	const char* tplstring = "Here, have a {{Template}}!";
 	
-{{/Person}}
-
-Sections correspond to nested template dictionaries inside the parent template dictionary.  A 
-section is expanded as many times as there are entires.  So, given:
-
-Persion={
-	Name=John
-	Age=32
-	Color=Blue
-} {
-	Name=Sarah
-	Age=19
-	Color=Purple
-}
-
-You would expect the template above to expand to:
-
-	Name: John
-	Age: 32
-	Color: Blue
+	/* Init some structs */
+	ngt_template* template = ngt_new();
+	ngt_dictionary* dictionary = ngt_dictionary_new();
+		
+	/* Set some stuff in the dictionary */
+	ngt_set_string(dictionary, "Template", "Beer");
 	
-	Name: Sarah
-	Age: 19
-	Color: Purple 
+	/* Associate the template with the dictionary and template string and expand the template */
+	template->template = tplstring;
+	ngt_set_dictionary(template, dictionary);
+	ngt_expand(tpl, &output);
+	
+	/* Should be "The template is: Here, have a Beer!" */
+	fprintf(stdout, "The template is: %s\n", output);
+	
+	/* Clean stuff up */
+	free(output);
+	ngt_destroy(template);
+	ngt_dictionary_destroy(dictionary);
 
-If there is no entry in the template dictionary for a section, that section is ignored and the markers
-erased from the template output.
-
-Section Separators
-------------------
-
-Take the following template and template dictionary:
-
-My favorite colors are {{#Colors}}{{Color}}{{/Colors}}
-
-Colors={
-	Color=Red
-} {
-	Color=Yellow
-} {
-	Color=Blue
-} {
-	Color=Black
-} {
-	Color=Gray
-}
-
-The output of the template would be:
-
-RedYellowBlueBlackGray
-
-But that's not what you want!  You'd like a comma and a space after all but the last color.
-Fortunately, ngtemplate understands separators:
-
-{{#Colors}}{{Color}}{{#Colors_separator}}, {{/Colors_separator}}{{/Colors}}
-
-Will output:
-
-Red, Yellow, Blue, Black, Gray
-
-Just like you want.
-
-[Work in progress]
