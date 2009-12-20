@@ -74,18 +74,17 @@ void _modifier_destroy(void *data)	{
 }
 
 /**
- * Destroys the given template dictionary and any sub dictionaries
+ * Destroys the given template
  * Signature comforms to hashtable and list function pointer signature
  */
-void _destroy(void* data)	{
-	ngt_template* dict = (ngt_template*)data;
+void _destroy_template(void* data)	{
+	ngt_template* tpl = (ngt_template*)data;
 	
-	ht_destroy(&dict->dict);
-	ht_destroy(&dict->modifiers);
-	if (dict->template)	{
-		free(dict->template);
+	ht_destroy(&tpl->modifiers);
+	if (tpl->template)	{
+		free(tpl->template);
 	}
-	free(dict);
+	free(tpl);
 }
 
 /**
@@ -149,7 +148,7 @@ _dictionary_item* _new_dictionary_item()	{
  * Helper function for the template_set_* functions.  Does NOT make a copy of the given value
  * string, but uses the pointer directly.
  */
-int _set_string(ngt_template* dict, const char* marker, char* value)	{
+int _set_string(ngt_dictionary* dict, const char* marker, char* value)	{
 	_dictionary_item* item, *prev_item;
 	
 	item = _new_dictionary_item();
@@ -184,7 +183,7 @@ void _cleanup_template(const char* filename, char* template)	{
  * 
  * Returns a pointer to the item if it exists, zero if not
  */
-_dictionary_item* _query_item(ngt_template* dict, const char* marker)	{
+_dictionary_item* _query_item(ngt_dictionary* dict, const char* marker)	{
 	_dictionary_item* query_item, *item;
 	
 	if (!dict)	{
@@ -210,11 +209,11 @@ _dictionary_item* _query_item(ngt_template* dict, const char* marker)	{
 
 /**
  * Helper function - Gets the modifier by the given name if it exists anywhere in the
- * dictionary hierarchy or in the global dictionary
+ * template modifier list
  */
-_modifier* _get_modifier_ref(ngt_template* dict, const char* name)	{
+_modifier* _query_modifier(ngt_template* tpl, const char* name)	{
 	_modifier* query_mod, *mod;
-	if (!dict)	{
+	if (!tpl)	{
 		return 0;
 	}
 	
@@ -223,15 +222,8 @@ _modifier* _get_modifier_ref(ngt_template* dict, const char* name)	{
 	
 	mod = query_mod;
 	
-	if (ht_lookup((hashtable*)dict, (void*)&mod) != 0)	{
-		// No value for this key
-		
-		// Try the next dictionary, and if still not there, try the global dictionary
-		// as a last resort
-		mod = _get_modifier_ref(dict->parent, name);
-		if (!mod && dict != ngt_get_global_dictionary())	{
-			mod = _get_modifier_ref(ngt_get_global_dictionary(), name);
-		}
+	if (ht_lookup(&tpl->modifiers, (void*)&mod) != 0)	{
+		mod = 0;
 	}
 	
 	free(query_mod);
@@ -246,7 +238,7 @@ _modifier* _get_modifier_ref(ngt_template* dict, const char* name)	{
  *
  * Returns the pointer to the value of the marker, or 0 if not found
  */
-const char* _get_string_value_ref(ngt_template* dict, const char* marker)	{
+const char* _get_string_value_ref(ngt_dictionary* dict, const char* marker)	{
 	_dictionary_item* item;
 	if (!dict)	{
 		return 0;
@@ -279,7 +271,7 @@ const char* _get_string_value_ref(ngt_template* dict, const char* marker)	{
  * Returns the pointer to the value of the marker, or 0 if not found or if the given node is not
  * a D_LIST
  */
-const list* _get_dictionary_list_ref(ngt_template* dict, const char* marker)	{
+const list* _get_dictionary_list_ref(ngt_dictionary* dict, const char* marker)	{
 	_dictionary_item* item;
 	if (!dict)	{
 		return 0;
@@ -312,7 +304,7 @@ const list* _get_dictionary_list_ref(ngt_template* dict, const char* marker)	{
  * Returns the pointer to the value of the marker, or 0 if not found or if the given node is not
  * an INCLUDE
  */
-struct _include_params_tag* _get_include_params_ref(ngt_template* dict, const char* marker)	{
+struct _include_params_tag* _get_include_params_ref(ngt_dictionary* dict, const char* marker)	{
 	_dictionary_item* item;
 	if (!dict)	{
 		return 0;
@@ -491,25 +483,25 @@ void _process_variable(const char* marker, const char* modifiers, _parse_context
 	char* value;
 	int applied_modifier;
 	
-	value = (char*)_get_string_value_ref(ctx->dict, marker);
+	value = (char*)_get_string_value_ref(ctx->active_dictionary, marker);
 	if (!value) {
 		
 		// Find the first parse context up the chain with a valid
 		// template dictionary and variable missing cb
 		_parse_context* this_ctx = ctx;
-		ngt_template* dict = 0;
+		ngt_template* tpl = 0;
 		while (this_ctx)	{
-			if (this_ctx && this_ctx->dict && this_ctx->dict->variable_missing)	{
-				dict = this_ctx->dict;
+			if (this_ctx && this_ctx->template && this_ctx->template->variable_missing)	{
+				tpl = this_ctx->template;
 				break;
 			}
 			
 			this_ctx = this_ctx->parent;
 		}
 		
-		if (dict && dict->variable_missing)	{
+		if (tpl && tpl->variable_missing)	{
 			// Give user code a chance to fill in this value
-			value = dict->variable_missing(marker);
+			value = tpl->variable_missing(marker);
 		}
 		
 		if (!value)	{
@@ -533,7 +525,7 @@ void _process_variable(const char* marker, const char* modifiers, _parse_context
 			}
 			modifier[m] = '\0';
 			
-			mod = _get_modifier_ref(ctx->dict, modifier);
+			mod = _query_modifier(ctx->template, modifier);
 			if (mod)	{
 				mod->modifier(modifier, "", marker, value, ctx->out_sb);
 				applied_modifier = 1;
@@ -541,19 +533,19 @@ void _process_variable(const char* marker, const char* modifiers, _parse_context
 				// Find the first parse context up the chain with a valid
 				// template dictionary and modifier missing cb
 				_parse_context* this_ctx = ctx;
-				ngt_template* dict = 0;
+				ngt_template* tpl = 0;
 				while (this_ctx)	{
-					if (this_ctx && this_ctx->dict && this_ctx->dict->modifier_missing)	{
-						dict = this_ctx->dict;
+					if (this_ctx && this_ctx->template && this_ctx->template->modifier_missing)	{
+						tpl = this_ctx->template;
 						break;
 					}
 
 					this_ctx = this_ctx->parent;
 				}
 
-				if (dict && dict->modifier_missing)	{
+				if (tpl && tpl->modifier_missing)	{
 					// Give user code a chance to fill in this value
-					dict->modifier_missing(modifier, "", marker, value, ctx->out_sb);
+					tpl->modifier_missing(modifier, "", marker, value, ctx->out_sb);
 					applied_modifier = 1;
 				} 
 			}
@@ -630,7 +622,7 @@ void _process_section(const char* marker, _parse_context* ctx, int is_include)	{
 	
 	// We loop through each dictionary in the dictionary list for this marker 
 	// (0 or more), and for each one we recursively process the template there
-	d_list_value = (list*)_get_dictionary_list_ref(ctx->dict, marker);
+	d_list_value = (list*)_get_dictionary_list_ref(ctx->active_dictionary, marker);
 	
 	if (is_include)	{
 		section_ctx = ctx;
@@ -650,7 +642,7 @@ void _process_section(const char* marker, _parse_context* ctx, int is_include)	{
 	
 	do {
 		section_ctx->last_expansion = (child && list_next(child) == 0) ? 1: 0;
-		section_ctx->dict = child? (ngt_template*)list_data(child) : 0;
+		section_ctx->active_dictionary = child? (ngt_dictionary*)list_data(child) : 0;
 		section_ctx->in_ptr = ctx->in_ptr;
 		saved_out_pos = ctx->out_sb->pos;
 			
@@ -683,7 +675,7 @@ void _process_include(const char* marker, _parse_context* ctx)	{
 	struct _include_params_tag* params;
 	_parse_context* include_ctx;
 	
-	params = _get_include_params_ref(ctx->dict, marker);
+	params = _get_include_params_ref(ctx->active_dictionary, marker);
 	if (!params || !params->get_template)	{
 		// Can't do anything with this one
 		return;

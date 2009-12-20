@@ -12,12 +12,12 @@
  * next one.  This is due to the fragility of the parser, but since it's a test function, it's really not
  * worth fixing it.
  */
-char* read_in_dictionary(ngt_template* d, int *line, int in_dictionary)	{
+char* read_in_dictionary(ngt_dictionary* d, char* in_ptr, int *line, int in_dictionary)	{
 	// TODO:  This is one big hack of a function.  We should clean this up some time
 	
 	char marker[MAXMARKERLENGTH];
 	char value[MAXVALUELENGTH];
-	char *ptr, *in_ptr;
+	char *ptr;
 	int ch, after_equals, escaped, in_comment, found_dictionary;
 	
 	memset(marker, 0, MAXMARKERLENGTH);
@@ -27,7 +27,6 @@ char* read_in_dictionary(ngt_template* d, int *line, int in_dictionary)	{
 	after_equals = 0;
 	in_comment = 0;
 	ptr = marker;
-	in_ptr = d->template;
 	if (!in_ptr)	{
 		return 0;
 	}
@@ -101,12 +100,9 @@ char* read_in_dictionary(ngt_template* d, int *line, int in_dictionary)	{
 				exit(-1);
 			}
 			
-			ngt_template* child = ngt_new();
-			child->parent = d;
-			child->template = in_ptr;
+			ngt_dictionary* child = ngt_dictionary_new();
 			ngt_add_dictionary(d, marker, child);
-			in_ptr = read_in_dictionary(child, line, 1);
-			child->template = 0;
+			in_ptr = read_in_dictionary(child, in_ptr, line, 1);
 			continue;
 		}
 		
@@ -231,34 +227,38 @@ DEFINE_TEST_FUNCTION	{
 	}
 	
 	ngt_init();
-	ngt_template* d = ngt_new();
+	ngt_template* tpl = ngt_new();
+	ngt_dictionary* dict = ngt_dictionary_new();
 	line = 1;
 	
-	ngt_load_from_file(d, in);
-	read_in_dictionary(d, &line, 0);
+	ngt_load_from_file(tpl, in);
+	read_in_dictionary(dict, tpl->template, &line, 0);
+	ngt_set_include_cb(dict, "Callback_Template", get_template_cb, cleanup_template_cb);
 		
-	ngt_add_modifier(d, "modifier", modifier_cb);
-	ngt_set_include_cb(d, "Callback_Template", get_template_cb, cleanup_template_cb);
-	ngt_set_modifier_missing_cb(d, missing_modifier_cb);
-	ngt_set_variable_missing_cb(d, variable_missing_cb);
+	ngt_add_modifier(tpl, "modifier", modifier_cb);
+	ngt_set_modifier_missing_cb(tpl, missing_modifier_cb);
+	ngt_set_variable_missing_cb(tpl, variable_missing_cb);
 	
 	// To test ngt_set_stringf(), ngt_set_int()
-	ngt_set_stringf(d, "FmtString", "(%d, %f, 0x%x, %s, %s some more %d)", 
+	ngt_set_stringf(dict, "FmtString", "(%d, %f, 0x%x, %s, %s some more %d)", 
 		42, 3.14159, 0xdeadbeef, "A String", "Another String", -72 );
-	ngt_set_int(d, "IntValue", 12345);	// I have the same combination on my luggage
+	ngt_set_int(dict, "IntValue", 12345);	// I have the same combination on my luggage
+	
+	ngt_set_dictionary(tpl, dict);
 	
 	if (argc > 3)	{
-		ngt_set_include_filename(d, "Filename_Template", argv[3]);
+		ngt_set_include_filename(dict, "Filename_Template", argv[3]);
 	}
 	
-	if (ngt_process(d, &result) < 0)	{
+	if (ngt_process(tpl, &result) < 0)	{
 		return -1;
 	}
 	
 	fprintf(out, "%s\n", result);
 	
 	free(result);
-	ngt_destroy(d);
+	ngt_destroy(tpl);
+	ngt_dictionary_destroy(dict);
 	return 0;
 }
 

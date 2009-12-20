@@ -40,14 +40,17 @@ void _mod_cstring_escape(const char* name, const char* args, const char* marker,
 }
 
 /**
- * Sets up the ngtemplate standard environment inside the given dictionary
- *
- * NOTE: This is mainly intended to be called for the Global Dictionary
+ * Sets up the ngtemplate global dictionary with standard values
  */
-void _init_standard_environment(ngt_template* d)	{
+void _init_global_dictionary(ngt_dictionary* d)	{
 	ngt_set_string(d, "BI_SPACE", " ");
 	ngt_set_string(d, "BI_NEWLINE", "\n");
-	
-	ngt_add_modifier(d, "none", _mod_none);
-	ngt_add_modifier(d, "cstring_escape", _mod_cstring_escape);
+}
+
+/**
+ * Sets up the standard modifier callbacks in a template.  They can be overriden by user code later
+ */ 
+void _init_standard_callbacks(ngt_template* tpl)	{
+	ngt_add_modifier(tpl, "none", _mod_none);
+	ngt_add_modifier(tpl, "cstring_escape", _mod_cstring_escape);
 }

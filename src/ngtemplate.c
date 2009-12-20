@@ -14,7 +14,7 @@
  * This is a special dictionary that contains global modifiers and dictionary
  * values
  */
-static ngt_template* s_global_dictionary = 0;
+static ngt_dictionary* s_global_dictionary = 0;
 
 static int s_initialized = 0;
 
@@ -28,8 +28,8 @@ void ngt_init()	{
 	}
 	
 	s_initialized = 1;
-	s_global_dictionary = ngt_new();
-	_init_standard_environment(s_global_dictionary);
+	s_global_dictionary = ngt_dictionary_new();
+	_init_global_dictionary(s_global_dictionary);
 }
 
 /**
@@ -39,26 +39,57 @@ void ngt_init()	{
  * to the caller to manage this dictionary
  */
 ngt_template* ngt_new()	{
-	ngt_template* d;
+	ngt_template* tpl;
 	
 	if (!s_initialized)	{
 		fprintf(stderr, "FATAL: You must call ngt_init() before creating any template dictionaries\n");
 		return 0;
 	}
 	
+	tpl = (ngt_template*)malloc(sizeof(ngt_template));
+	memset(tpl, 0, sizeof(ngt_template));
+	
+	ht_init(&tpl->modifiers, 23, _modifier_hash, _modifier_match, _modifier_destroy);
+	
+	_init_standard_callbacks(tpl);
+	
+	return tpl;
+}
+
+/**
+ * Creates a new ngt Template Dictionary, ready to be filled with values
+ */
+ngt_dictionary* ngt_dictionary_new()	{
+	ngt_dictionary* d = (ngt_dictionary*)malloc(sizeof(ngt_dictionary));
+	memset(d, 0, sizeof(ngt_dictionary));
+	
 	// NOTE: Adjust the buckets parameter depending on how many markers are likely to be in a template
-	//		file (then adjust upward to the next prime number)
-	d = (ngt_template*)malloc(sizeof(ngt_template));
+	//		file (then adjust upward to the next prime number
 	ht_init((hashtable*)d, 197, _dictionary_hash, _dictionary_match, _dictionary_destroy);
-	ht_init(&d->modifiers, 23, _modifier_hash, _modifier_match, _modifier_destroy);
-	return d;
+	
+	return d;	
 }
 
 /** 
+ * Destroys the given template
+ */
+void ngt_destroy(ngt_template* tpl)	{
+	_destroy_template((void*)tpl);
+}
+
+/**
  * Destroys the given template dictionary and any sub-dictionaries
  */
-void ngt_destroy(ngt_template* dict)	{
-	_destroy((void*)dict);
+void ngt_dictionary_destroy(ngt_dictionary* dict)	{
+	ht_destroy((hashtable*)dict);
+	free(dict);
+}
+
+/**
+ * Sets the dictionary for the given template.  The dictionary can be NULL
+ */
+void ngt_set_dictionary(ngt_template* tpl, ngt_dictionary* dict)	{
+	tpl->dictionary = dict;
 }
 
 /**
@@ -66,7 +97,7 @@ void ngt_destroy(ngt_template* dict)	{
  *
  * Returns 0 if successful, -1 otherwise
  */
-int ngt_load_from_file(ngt_template* dict, FILE* fp)	{
+int ngt_load_from_file(ngt_template* tpl, FILE* fp)	{
 	char* template;
 	
 	template = _get_template_from_file(fp);
@@ -74,11 +105,11 @@ int ngt_load_from_file(ngt_template* dict, FILE* fp)	{
 		return -1;
 	}
 	
-	if (dict->template)	{
-		free(dict->template);
+	if (tpl->template)	{
+		free(tpl->template);
 	}
 	
-	dict->template = template;
+	tpl->template = template;
 	return 0;
 }
 
@@ -87,7 +118,7 @@ int ngt_load_from_file(ngt_template* dict, FILE* fp)	{
  *
  * Returns 0 if successful, -1 otherwise
  */
-int ngt_load_from_filename(ngt_template* dict, const char* filename)	{
+int ngt_load_from_filename(ngt_template* tpl, const char* filename)	{
 	char* template;
 	
 	template = _get_template_from_filename(filename);
@@ -95,11 +126,11 @@ int ngt_load_from_filename(ngt_template* dict, const char* filename)	{
 		return -1;
 	}
 	
-	if (dict->template)	{
-		free(dict->template);
+	if (tpl->template)	{
+		free(tpl->template);
 	}
 	
-	dict->template = template;
+	tpl->template = template;
 	return 0;
 }
 
@@ -108,8 +139,8 @@ int ngt_load_from_filename(ngt_template* dict, const char* filename)	{
  * resolve to any known modifiers.  The function will have the opportunity to adjust the output
  * of the marker, and will be passed any arguments.
  */
-void ngt_set_modifier_missing_cb(ngt_template* dict, modifier_fn mod_fn)	{
-	dict->modifier_missing = mod_fn;
+void ngt_set_modifier_missing_cb(ngt_template* tpl, modifier_fn mod_fn)	{
+	tpl->modifier_missing = mod_fn;
 }
 
 /**
@@ -117,8 +148,8 @@ void ngt_set_modifier_missing_cb(ngt_template* dict, modifier_fn mod_fn)	{
  * found.  The function will have the opportunity to give the value of the variable by appending
  * to the out_sb string builder.
  */
-void ngt_set_variable_missing_cb(ngt_template* dict, get_variable_fn get_fn)	{
-	dict->variable_missing = get_fn;
+void ngt_set_variable_missing_cb(ngt_template* tpl, get_variable_fn get_fn)	{
+	tpl->variable_missing = get_fn;
 }
 
 /**
@@ -129,7 +160,7 @@ void ngt_set_variable_missing_cb(ngt_template* dict, get_variable_fn get_fn)	{
  *
  * Returns 0 if the operation succeeded, -1 otherwise
  */
-int ngt_add_modifier(ngt_template* dict, const char* name, modifier_fn mod_fn)	{
+int ngt_add_modifier(ngt_template* tpl, const char* name, modifier_fn mod_fn)	{
 	_modifier* mod, *prev_mod;
 	
 	mod = (_modifier*)malloc(sizeof(_modifier));
@@ -137,13 +168,13 @@ int ngt_add_modifier(ngt_template* dict, const char* name, modifier_fn mod_fn)	{
 	strcpy(mod->name, name);
 	mod->modifier = mod_fn;
 	
-	if (ht_insert((hashtable*)dict, mod) == 1)	{
+	if (ht_insert(&tpl->modifiers, mod) == 1)	{
 		// Already in the table, replace
 		prev_mod = mod;
-		ht_remove((hashtable*)dict, (void *)&prev_mod);
+		ht_remove(&tpl->modifiers, (void *)&prev_mod);
 		_dictionary_destroy((void*)prev_mod);
 		
-		ht_insert((hashtable*)dict, mod);
+		ht_insert(&tpl->modifiers, mod);
 	}
 	
 	return 0;	
@@ -156,7 +187,7 @@ int ngt_add_modifier(ngt_template* dict, const char* name, modifier_fn mod_fn)	{
  *
  * Returns 0 if the operation succeeded, -1 otherwise
  */
-int ngt_set_string(ngt_template* dict, const char* marker, const char* value)	{
+int ngt_set_string(ngt_dictionary* dict, const char* marker, const char* value)	{
 	char* str;
 	str = (char*)malloc(strlen(value) + 1);
 	if (!str)	{
@@ -174,7 +205,7 @@ int ngt_set_string(ngt_template* dict, const char* marker, const char* value)	{
  *
  * Returns 0 if the operations succeeded, -1 otherwise
  */
-int ngt_set_stringf(ngt_template* dict, const char* marker, const char* fmt, ...)	{
+int ngt_set_stringf(ngt_dictionary* dict, const char* marker, const char* fmt, ...)	{
 	// TODO: Won't work on Windows.  Have to use _vscprintf on that platform
 	char* str;
 	int length;
@@ -208,12 +239,12 @@ int ngt_set_stringf(ngt_template* dict, const char* marker, const char* fmt, ...
  *
  * Returns 0 if the operations succeeded, -1 otherwise
  */
-int ngt_set_int(ngt_template* dict, const char* marker, int value)	{
+int ngt_set_int(ngt_dictionary* dict, const char* marker, int value)	{
 	return ngt_set_stringf(dict, marker, "%d", value);
 }
 
 /**
- * On an include template, sets the callbacks to be called when the system needs the template
+ * On an include template dictionary, sets the callbacks to be called when the system needs the template
  * string for the given include name.  Also, prove a cleanup_template function to call when the
  * system no longer needs the template data.
  * NOTES: It is illegal to call this function on a string value marker
@@ -221,7 +252,7 @@ int ngt_set_int(ngt_template* dict, const char* marker, int value)	{
  *
  * Returns 0 if the operation succeeded, -1 otherwise
  */
-int ngt_set_include_cb(ngt_template* dict, const char* marker, get_template_fn get_template, 
+int ngt_set_include_cb(ngt_dictionary* dict, const char* marker, get_template_fn get_template, 
 							cleanup_template_fn cleanup_template)	{
 	_dictionary_item* item, *prev_item;
 	
@@ -251,12 +282,12 @@ int ngt_set_include_cb(ngt_template* dict, const char* marker, get_template_fn g
 }
 
 /**
- * On an include template, sets the filename that will be loaded to obtain the template data
+ * On an include template dictionary, sets the filename that will be loaded to obtain the template data
  * NOTE: It is illegal to call this function on a string value marker
  *
  * Returns 0 if the operation succeeded, -1 otherwise
  */
-int ngt_set_include_filename(ngt_template* dict, const char* marker, const char* filename)	{
+int ngt_set_include_filename(ngt_dictionary* dict, const char* marker, const char* filename)	{
 	_dictionary_item* item;
 	
 	if (ngt_set_include_cb(dict, marker, _get_template_from_filename, _cleanup_template) != 0)	{
@@ -277,7 +308,7 @@ int ngt_set_include_filename(ngt_template* dict, const char* marker, const char*
  *
  * Returns 0 if the operation succeeded, -1 otherwise
  */
-int ngt_add_dictionary(ngt_template* dict, const char* marker, ngt_template* child)	{
+int ngt_add_dictionary(ngt_dictionary* dict, const char* marker, ngt_dictionary* child)	{
 	_dictionary_item* item, *prev_item;
 	
 	item = (_dictionary_item*)malloc(sizeof(_dictionary_item));
@@ -303,7 +334,7 @@ int ngt_add_dictionary(ngt_template* dict, const char* marker, ngt_template* chi
 	
 	if (!item->val.d_list_value)	{
 		item->val.d_list_value = (list*)malloc(sizeof(list));
-		list_init(item->val.d_list_value, _destroy);
+		list_init(item->val.d_list_value, _dictionary_destroy);
 	}
 	
 	list_insert_next(item->val.d_list_value, list_tail(item->val.d_list_value), child);
@@ -319,7 +350,7 @@ int ngt_add_dictionary(ngt_template* dict, const char* marker, ngt_template* chi
  *
  * Returns 0 if the template was successfully processed, -1 if there was an error
  */
-int ngt_process(ngt_template* dict, char** result)	{
+int ngt_process(ngt_template* tpl, char** result)	{
 	int res;
 	_parse_context context;
 	char start_marker[2];
@@ -333,8 +364,9 @@ int ngt_process(ngt_template* dict, char** result)	{
 	strcpy(context.end_delimiter.literal, "}}");
 	context.end_delimiter.length = 2;
 	
-	context.dict = dict;
-	context.in_ptr = (char*)dict->template;
+	context.template = tpl;
+	context.active_dictionary = tpl->dictionary;
+	context.in_ptr = (char*)tpl->template;
 	context.template_line = 1;
 	
 	context.out_sb = sb_new_with_size(1024);
@@ -349,9 +381,9 @@ int ngt_process(ngt_template* dict, char** result)	{
 /**
  * Pretty-prints the dictionary key value pairs, one per line, with nested dictionaries tabbed
  */
-void ngt_print_dictionary(ngt_template* dict, FILE* out)	{
+void ngt_print_dictionary(ngt_dictionary* dict, FILE* out)	{
 	
-	hashtable_iter* it = ht_iter_begin((hashtable*)dict);
+	hashtable_iter* it = ht_iter_begin(&dict->dictionary);
 	_dictionary_item* item;
 	while (it)	{
 		item = (_dictionary_item*)ht_value(it);
@@ -375,9 +407,8 @@ void ngt_print_dictionary(ngt_template* dict, FILE* out)	{
 }
 
 /**
- * Returns that Global Dictionary in which the Standard Environment for all templates is defined, 
- * including built-in modifiers and default variables
+ * Returns that Global Dictionary in which the Standard Values for all templates are defined
  */
-ngt_template* ngt_get_global_dictionary()	{
+ngt_dictionary* ngt_get_global_dictionary()	{
 	return s_global_dictionary;
 }
