@@ -45,8 +45,7 @@ int main(int argc, char** argv)	{
 		fprintf(stderr, "USAGE: ngtembed file1[=name1] file2[=name2] ... fileN[=nameN] [>out_file]\n");
 		exit(-1);
 	}
-	
-	ngt_init();
+
 	tpl = ngt_new();
 	dict = ngt_dictionary_new();
 	

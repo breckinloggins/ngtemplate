@@ -42,8 +42,7 @@ ngt_template* ngt_new()	{
 	ngt_template* tpl;
 	
 	if (!s_initialized)	{
-		fprintf(stderr, "FATAL: You must call ngt_init() before creating any template dictionaries\n");
-		return 0;
+		ngt_init();
 	}
 	
 	tpl = (ngt_template*)malloc(sizeof(ngt_template));
