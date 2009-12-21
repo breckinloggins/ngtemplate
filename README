@@ -101,7 +101,7 @@ Known Issues and Limitations for Version 0.1
 	- Probably susceptible to buffer overruns.  Haven't done a threat analysis yet.
 	- Pragmas (including AUTOESCAPE) are not currently supported
 	- Modifier support is not yet as capable as CTemplate:
-		- Modifiers are supported, but none are currently built-in except :none and :cstring_escape
+		- Modifiers are supported, but only built-in currently are :none, :cstring_escape, :html_escape
 		- Modifiers are not yet supported on includes
 	- Per-expand-data and custom emitters are not currently supported
 	- Custom delimiters are supported (via {{= =}}), but they cannot be more than 8 characters long

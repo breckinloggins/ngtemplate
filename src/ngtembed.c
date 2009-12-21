@@ -9,13 +9,18 @@
 static const char out_template[] = 
 	"/* Embedded Template Strings */\n"
 	"@#Template@"
-		"const char @TemplateName@[] =\n    \"@TemplateBody:cstring_escape:breakup_lines@\";"
+		"const char @TemplateName@[] =@BI_NEWLINE@    \"@TemplateBody:cstring_escape:breakup_lines@\";"
 		"@#Template_separator@@BI_NEWLINE@@BI_NEWLINE@@/Template_separator@"
 	"@/Template@"
 	"@BI_NEWLINE@"
 	"/* End Embedded Template Strings */"
 	"@BI_NEWLINE@";
 
+/**
+ * Breaks up the input into multiple quoted lines, making sure each line doesn't go over the 80 column
+ * limit.  This is for aesthetic reasons as well as because there are compilers that can't tolerate 
+ * incredibly long source lines
+ */
 void breakup_lines_modifier_cb(const char* name, const char* args, const char* marker, const char* value, stringbuilder* out_sb)	{
 	char* p;
 	p = (char*)value;
@@ -33,6 +38,9 @@ void breakup_lines_modifier_cb(const char* name, const char* args, const char* m
 	sb_append_ch(out_sb, '\0');
 }
 
+/**
+ * ngtembed - Turn one or more template files into C code for embedding into programs
+ */
 int main(int argc, char** argv)	{
 	int i;
 	ngt_template* tpl;

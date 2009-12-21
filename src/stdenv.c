@@ -40,6 +40,28 @@ void _mod_cstring_escape(const char* name, const char* args, const char* marker,
 }
 
 /**
+ * :html_escape - Turns spaces into &nbsp; ampersands into &amp;, and so forth
+ */
+void _mod_html_escape(const char* name, const char* args, const char* marker, const char* value, stringbuilder* out_sb)	{
+	char* ptr;
+	
+	ptr = (char*)value;
+	while (ptr && *ptr)	{
+		switch(*ptr)	{
+			/* TODO: What to do about &nbsp;? */
+			case '\"': 	sb_append_str(out_sb, "&quot;");		break;
+			case '&':	sb_append_str(out_sb, "&amp;");			break;
+			case '<':	sb_append_str(out_sb, "&lt;");			break;
+			case '>':	sb_append_str(out_sb, "&gt;");			break;
+			
+			default: sb_append_ch(out_sb, *ptr);
+		}
+		
+		ptr++;
+	}
+}
+
+/**
  * Sets up the ngtemplate global dictionary with standard values
  */
 void _init_global_dictionary(ngt_dictionary* d)	{
@@ -53,4 +75,6 @@ void _init_global_dictionary(ngt_dictionary* d)	{
 void _init_standard_callbacks(ngt_template* tpl)	{
 	ngt_add_modifier(tpl, "none", _mod_none);
 	ngt_add_modifier(tpl, "cstring_escape", _mod_cstring_escape);
+	ngt_add_modifier(tpl, "html_escape", _mod_html_escape);
+	ngt_add_modifier(tpl, "h", _mod_html_escape);
 }

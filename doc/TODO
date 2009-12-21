@@ -1,41 +1,12 @@
-Version 0.1 - Preview Release
------------------------------
-[X]	Iterator for hashtable
-[X]	Debug print of dictionary
-[X]	Test Framework: Read dictionary/template from file
-[X]	Test Framework: Process template and compare to benchmark
-[X]	Support comment markers
-[X]	Modify template dictionary code to support dictionaries as children
-[X]	Test Framework: Dictionary read code allow escaped special characters
-[X]	Test Framework: Dictionary read code allow comments ('#')
-[X]	Test Framework: Dictionary read code allow nested dictionaries
-[X]	Sections {{#SOMETHING}}.. {{/SOMETHING}} support in template_process
-[X]	Add nested scoping for dictionary markers
-[X]	Support empty sections
-[X]	Support set delimiter markers and specifying set delimiters in code
-[X]	Refactor _process() to be more readable
-[X]	Separator sections support in template_process
-[X]	Includes {{>SOME_FILE}} support in template_process
-	[X]	Add infrastructure support
-	[X]	Add support for template callbacks
-	[X]	Add support for loading templates by filename
-	[X]	Make sure the appropriate indention level is retained when outputting the included template
-[X]	Basic support for template modifiers
-[X]	Add template_set_stringf, template_set_int
-[X]	Add template_load_from_file 
-[X]	Add support for Marker Missing and Modifier Missing callbacks
-[X]	Break up into multiple files
-[X]	Support builtin modifiers :none and :cstring_escape
-[X]	Add global dictionary
-[X]	Add BI_SPACE and BI_NEWLINE to global dictionary
-[X]	Decouple dictionaries from templates
-[X]	Make sure all API names are as close as possible to the CTemplate counterparts
-[X]	Provide way to set the delimiters from code
-[X]  Add show/hide section
-[X]	Support modifier args 
-[X]	Properly support modifier chaining
-[X]	Create tool for turning template files into strings in C headers
-[X]	Make proper QUICKSTART documentation
+Version 0.2
+-----------
+[]	ngtembed
+	[]	Add test harness
+	[]	Support setting different output template
+[X]	:html_escape
+[]	:pre_escape
+[]	:xml_escape
+[]	:url_query_escape
 
 Version 0.9 - Production Release Candidate
 ------------------------------------------
@@ -43,15 +14,9 @@ Version 0.9 - Production Release Candidate
 []	Project web page
 []	Windows support
 []	Downloadable binaries
-[]	ngtembed
-	[]	Add test harness
-	[]	Support setting different output template
 []	Full threat analysis for security problems
 []	Add support for Pragmas, AUTOESCAPE
 []	Modifiers should support includes
-[]	:html_escape
-[]	:pre_escape
-[]	:url_query_escape
 []	:javascript_escape
 []	:json_escape
 []	:cleanse_css
