@@ -4,9 +4,10 @@ Version 0.2
 	[]	Add test harness
 	[]	Support setting different output template
 [X]	:html_escape
-[]	:pre_escape
-[]	:xml_escape
-[]	:url_query_escape
+[X]	:pre_escape
+[X]	:xml_escape
+[X]	:url_query_escape
+[X]	:cleanse_css
 
 Version 0.9 - Production Release Candidate
 ------------------------------------------
@@ -17,10 +18,12 @@ Version 0.9 - Production Release Candidate
 []	Full threat analysis for security problems
 []	Add support for Pragmas, AUTOESCAPE
 []	Modifiers should support includes
+[]	Support for UTF-8/Unicode
 []	:javascript_escape
 []	:json_escape
-[]	:cleanse_css
-[]	Rest of built-in CTemplate modifiers
+[]	:javascript_escape_with_arg
+[]	:html_escape_with_arg
+[]	:url_escape_with_arg
 []	Per-expand data
 []	Support template behaviors: DO_NOT_STRIP, STRIP_BLANK_LINES, STRIP_WHITESPACE
 []	Binary templates

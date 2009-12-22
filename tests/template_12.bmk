@@ -1,6 +1,12 @@
 
 
 This is an example of a \"CString\" and should be \'escaped\'
-There are &quot;many&quot; things in HTML that should be escaped, like &lt; &amp; &gt;
-There are &quot;many&quot; things in HTML that should be escaped, like &lt; &amp; &gt;
+There are "many" things in HTML that should be escaped, like &lt; &amp; &gt;
+There are "many" things in HTML that should be escaped, like &lt; &amp; &gt;
+There are "many" things in HTML that should be escaped, like &lt; &amp; &gt;
+There are "many" things in HTML that should be escaped, like &lt; &amp; &gt;
+http://www.somewhere.com/~somebody/this+will+need+to+be+escaped!
+http://www.somewhere.com/~somebody/this+will+need+to+be+escaped!
+This_Is_NOT_ASafeValue!
+This_Is_NOT_ASafeValue!
 

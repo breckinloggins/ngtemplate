@@ -92,17 +92,16 @@ Differences from CTemplate
           the first thing following the next colon as modifier arguments, just like in CTemplate
 		- You can chain custom modifiers together just like built-in modifiers
 
-Known Issues and Limitations for Version 0.1
---------------------------------------------
+Known Issues and Limitations
+----------------------------
 
 	- You cannot currently specify search directories for templates.  Calls to 
       template_set_filename() need to have absolute or resolvable relative paths to the template file
 	- Probably not UTF-8/Unicode compatible
 	- Probably susceptible to buffer overruns.  Haven't done a threat analysis yet.
-	- Pragmas (including AUTOESCAPE) are not currently supported
-	- Modifier support is not yet as capable as CTemplate:
-		- Modifiers are supported, but only built-in currently are :none, :cstring_escape, :html_escape
-		- Modifiers are not yet supported on includes
+	- AUTOESCAPE is not supported, and probably won't be unless someone sends me a patch for it
+	- json_escape and javascript_escape modifiers are not supported
+	- Modifiers are not yet supported on includes
 	- Per-expand-data and custom emitters are not currently supported
 	- Custom delimiters are supported (via {{= =}}), but they cannot be more than 8 characters long
 	- Repeatedly generating output from the same template is slower than it needs to be, because we 
