@@ -14,13 +14,16 @@ SET(ngtemplate_LIB_SRCS
 ADD_LIBRARY(ngtemplate STATIC ${ngtemplate_LIB_SRCS})
 TARGET_LINK_LIBRARIES(ngtemplate useful)
 
-ADD_EXECUTABLE(ngtembed ngtembed.c)
+ADD_EXECUTABLE(ngtembed ngtembed_tool.c ngtembed.c)
 TARGET_LINK_LIBRARIES(ngtembed useful ngtemplate)
 
 ENABLE_TESTING()
 
 ADD_EXECUTABLE(template_test testing/template_test.c)
 TARGET_LINK_LIBRARIES(template_test useful ngtemplate)
+
+ADD_EXECUTABLE(ngtembed_test ngtembed_test.c ngtembed.c)
+TARGET_LINK_LIBRARIES(ngtembed_test useful ngtemplate)
 
 MACRO(ADD_TEMPLATE_TEST NUMBER)
 	ADD_TEST(
@@ -54,3 +57,4 @@ ADD_TEMPLATE_TEST(9)
 ADD_TEMPLATE_TEST(10)
 ADD_TEMPLATE_TEST(11)
 ADD_TEMPLATE_TEST(12)
+ADD_TEST(ngtembed ${EXECUTABLE_OUTPUT_PATH}/ngtembed_test ../tests/ngtembed_0.tst ../tests/ngtembed_1.tst ../tests/ngtembed_2.tst ../tests/ngtembed.bmk)

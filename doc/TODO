@@ -1,7 +1,7 @@
 Version 0.2
 -----------
 []	ngtembed
-	[]	Add test harness
+	[X]	Add test harness
 	[]	Support setting different output template
 [X]	:html_escape
 [X]	:pre_escape
@@ -16,7 +16,6 @@ Version 0.9 - Production Release Candidate
 []	Windows support
 []	Downloadable binaries
 []	Full threat analysis for security problems
-[]	Add support for Pragmas, AUTOESCAPE
 []	Modifiers should support includes
 []	Support for UTF-8/Unicode
 []	:javascript_escape

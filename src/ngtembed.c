@@ -21,7 +21,7 @@ static const char out_template[] =
  * limit.  This is for aesthetic reasons as well as because there are compilers that can't tolerate 
  * incredibly long source lines
  */
-void breakup_lines_modifier_cb(const char* name, const char* args, const char* marker, const char* value, stringbuilder* out_sb)	{
+static void _breakup_lines_modifier_cb(const char* name, const char* args, const char* marker, const char* value, stringbuilder* out_sb)	{
 	char* p;
 	p = (char*)value;
 	int i;
@@ -39,9 +39,9 @@ void breakup_lines_modifier_cb(const char* name, const char* args, const char* m
 }
 
 /**
- * ngtembed - Turn one or more template files into C code for embedding into programs
+ * ngt_embed - Turn one or more template files into C code for embedding into programs
  */
-int main(int argc, char** argv)	{
+int ngt_embed(FILE* out, int argc, char** argv)	{
 	int i;
 	ngt_template* tpl;
 	ngt_dictionary* dict;
@@ -51,13 +51,13 @@ int main(int argc, char** argv)	{
 	
 	if (argc == 1)	{
 		fprintf(stderr, "USAGE: ngtembed file1[=name1] file2[=name2] ... fileN[=nameN] [>out_file]\n");
-		exit(-1);
+		return -1;
 	}
 
 	tpl = ngt_new();
 	dict = ngt_dictionary_new();
 	
-	ngt_add_modifier(tpl, "breakup_lines", breakup_lines_modifier_cb);
+	ngt_add_modifier(tpl, "breakup_lines", _breakup_lines_modifier_cb);
 	ngt_set_delimiters(tpl, "@", "@");
 	ngt_set_dictionary(tpl, dict);
 	tpl->template = (char*)out_template;
@@ -102,7 +102,7 @@ int main(int argc, char** argv)	{
 			fd = fopen(file, "r");
 			if (!fd)	{
 				fprintf(stderr, "Could not open '%s' for reading\n", file);
-				exit(-1);
+				return -1;
 			}
 			
 			ngt_dictionary* section = ngt_dictionary_new();
@@ -123,7 +123,7 @@ int main(int argc, char** argv)	{
 	}
 	
 	ngt_expand(tpl, &output);
-	fprintf(stdout, "%s\n", output);
+	fprintf(out, "%s\n", output);
 	
 	ngt_destroy(tpl);
 	ngt_dictionary_destroy(dict);
