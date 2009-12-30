@@ -1,34 +1,33 @@
 Version 0.2
 -----------
-[]	ngtembed
-	[X]	Add test harness
-	[]	Support setting different output template
-[X]	:html_escape
-[X]	:pre_escape
-[X]	:xml_escape
-[X]	:url_query_escape
-[X]	:cleanse_css
+[X] ngtembed: Add test harness
+[X] :html_escape
+[X] :pre_escape
+[X] :xml_escape
+[X] :url_query_escape
+[X] :cleanse_css
 
 Version 0.9 - Production Release Candidate
 ------------------------------------------
-[]	Better documentation
-[]	Project web page
-[]	Windows support
-[]	Downloadable binaries
-[]	Full threat analysis for security problems
-[]	Modifiers should support includes
-[]	Support for UTF-8/Unicode
-[]	:javascript_escape
-[]	:json_escape
-[]	:javascript_escape_with_arg
-[]	:html_escape_with_arg
-[]	:url_escape_with_arg
-[]	Per-expand data
-[]	Support template behaviors: DO_NOT_STRIP, STRIP_BLANK_LINES, STRIP_WHITESPACE
-[]	Binary templates
-[]	Template preprocess into data structure for faster application.  This way parsing overhead would only happen once
+[]  Better documentation
+[]  Project web page
+[]  Windows support
+[]  Downloadable binaries
+[]  Full threat analysis for security problems
+[]  Modifiers should support includes
+[]  Support for UTF-8/Unicode
+[]  :javascript_escape
+[]  :json_escape
+[]  :javascript_escape_with_arg
+[]  :html_escape_with_arg
+[]  :url_escape_with_arg
+[]  Per-expand data
+[]  ngtembed: Support setting different output template, string concat properties
+[]  Support template behaviors: DO_NOT_STRIP, STRIP_BLANK_LINES, STRIP_WHITESPACE
+[]  Binary templates
+[]  Template preprocess into data structure for faster application.  This way parsing overhead would only happen once
 
 Version 1.0 - Production Release
 --------------------------------
-[]	Fix bugs found/reported during Release Candidate testing
-[]	Performance and memory allocation study
+[]  Fix bugs found/reported during Release Candidate testing
+[]  Performance and memory allocation study

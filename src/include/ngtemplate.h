@@ -8,11 +8,11 @@
 #include "../../lib/libuseful/src/include/hashtable.h"
 #include "../../lib/libuseful/src/include/stringbuilder.h"
 
-#define MAXMARKERLENGTH		64
-#define MAXMODIFIERLENGTH	128
+#define MAXMARKERLENGTH     64
+#define MAXMODIFIERLENGTH   128
 
-#define NGT_SECTION_VISIBLE	1
-#define NGT_SECTION_HIDDEN	0
+#define NGT_SECTION_VISIBLE 1
+#define NGT_SECTION_HIDDEN  0
 
 /* Pointer to a function that will return a pointer to a template string given its name */ 
 typedef char* (*get_template_fn)(const char* name);
@@ -23,9 +23,9 @@ typedef void (*cleanup_template_fn)(const char* name, char* template);
 /** 
  * Pointer to a function that will be called to modify the output of a template process for a marker
  *  name - The name of the modifier being called
- *	marker - The name of the marker being evaluated
+ *  marker - The name of the marker being evaluated
  *  value - The value that the template processor will be using if nothing is done
- *	out_sb - The stringbuilder to which to append changes
+ *  out_sb - The stringbuilder to which to append changes
  *  args - The arguments, if any
  */
 typedef void (*modifier_fn)(const char* name, const char* args, const char* marker, const char* value, stringbuilder* out_sb);
@@ -38,36 +38,36 @@ typedef void (*modifier_fn)(const char* name, const char* args, const char* mark
  */
 typedef char* (*get_variable_fn)(const char* marker);
 
-typedef struct ngt_dictionary_tag	{
-	hashtable dictionary;
-	int should_expand;							/* Determines whether the section represented by
-													this dictionary should be shown */
-	struct ngt_dictionary_tag* parent;
+typedef struct ngt_dictionary_tag   {
+    hashtable dictionary;
+    int should_expand;                          /* Determines whether the section represented by
+                                                    this dictionary should be shown */
+    struct ngt_dictionary_tag* parent;
 } ngt_dictionary;
 
 // Represents a start or stop marker delimiter
-#define MAX_DELIMITER_LENGTH	8				/* I really don't know why someone would want a 
-											 		delimiter this long, but just in case */
-typedef struct delimiter_tag	{
-	int length;
-	char literal[MAX_DELIMITER_LENGTH];			/* Keep the literal as the last record in the 
-													struct so people can do the "overallocated 
-													struct" trick if they need more than 
-													MAX_DELIMITER_LENGTH */
+#define MAX_DELIMITER_LENGTH    8               /* I really don't know why someone would want a 
+                                                    delimiter this long, but just in case */
+typedef struct delimiter_tag    {
+    int length;
+    char literal[MAX_DELIMITER_LENGTH];         /* Keep the literal as the last record in the 
+                                                    struct so people can do the "overallocated 
+                                                    struct" trick if they need more than 
+                                                    MAX_DELIMITER_LENGTH */
 } delimiter;
 
-typedef struct ngt_template_tag	{
-	ngt_dictionary* dictionary;					
-	
-	hashtable modifiers;
-	
-	char*	template;
-	
-	delimiter start_delimiter;					/* Characters that signify start of a marker */
-	delimiter end_delimiter;					/* Characters that signify end of a marker */
-		
-	modifier_fn			modifier_missing;
-	get_variable_fn		variable_missing;
+typedef struct ngt_template_tag {
+    ngt_dictionary* dictionary;                 
+    
+    hashtable modifiers;
+    
+    char*   template;
+    
+    delimiter start_delimiter;                  /* Characters that signify start of a marker */
+    delimiter end_delimiter;                    /* Characters that signify end of a marker */
+        
+    modifier_fn         modifier_missing;
+    get_variable_fn     variable_missing;
 } ngt_template;
 
 /**
@@ -179,7 +179,7 @@ int ngt_set_int(ngt_dictionary* dict, const char* marker, int value);
  * On an include template dictionary, sets the filename that will be loaded to obtain the template data
  * NOTES: - It is illegal to call this function on a string value marker
  *        - Calling template_set_include_cb is not necessary if you set a filename, as the file will
- *		    be looked up for you.  However, if you need to perform custom logic (such as searching
+ *          be looked up for you.  However, if you need to perform custom logic (such as searching
  *          through a list of pre-defined directories for the file), you can do the load logic yourself
  *          by registering a callback function with template_set_include_cb.  When the function is called, 
  *          the "name" argument will be the filename you set instead of the include marker name
@@ -194,13 +194,13 @@ int ngt_set_include_filename(ngt_dictionary* dict, const char* marker, const cha
  * system no longer needs the template data.
  * NOTES: - It is illegal to call this function on a string value marker
  *        - It is legal to pass null to cleanup_template
- *		  - The first call to the callback for every unique name will be memoized.  The function will 
+ *        - The first call to the callback for every unique name will be memoized.  The function will 
  *          NOT be called for every expansion of the marker
  * 
  * Returns 0 if the operation succeeded, -1 otherwise
  */
 int ngt_set_include_cb(ngt_dictionary* dict, const char* marker, get_template_fn get_template, 
-							cleanup_template_fn cleanup_template);
+                            cleanup_template_fn cleanup_template);
 
 /**
  * Sets the visibility for the section indicated by "section" in the given dictionary
@@ -214,7 +214,7 @@ void ngt_set_section_visibility(ngt_dictionary* dict, const char* section, int v
  * the new dictionary will be ADDED to the end of the list, NOT replace the old one
  *
  * NOTE: Set visible to non-zero if you wish section to be shown automatically, zero if you wish to 
- *		hide it and show later with ngt_show_section();
+ *      hide it and show later with ngt_show_section();
  *
  * Returns 0 if the operation succeeded, -1 otherwise
  */

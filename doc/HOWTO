@@ -19,34 +19,34 @@ Section Markers
 A Section looks like:
 
 {{#Person}}
-	Name: {{Name}}
-	Age: {{Age}}
-	Favorite Color: {{Color}}
-	
+    Name: {{Name}}
+    Age: {{Age}}
+    Favorite Color: {{Color}}
+    
 {{/Person}}
 
 Sections correspond to nested template dictionaries inside the parent template dictionary.  A 
 section is expanded as many times as there are entires.  So, given:
 
 Persion={
-	Name=John
-	Age=32
-	Color=Blue
+    Name=John
+    Age=32
+    Color=Blue
 } {
-	Name=Sarah
-	Age=19
-	Color=Purple
+    Name=Sarah
+    Age=19
+    Color=Purple
 }
 
 You would expect the template above to expand to:
 
-	Name: John
-	Age: 32
-	Color: Blue
-	
-	Name: Sarah
-	Age: 19
-	Color: Purple 
+    Name: John
+    Age: 32
+    Color: Blue
+    
+    Name: Sarah
+    Age: 19
+    Color: Purple 
 
 If there is no entry in the template dictionary for a section, that section is ignored and the markers
 erased from the template output.
@@ -59,15 +59,15 @@ Take the following template and template dictionary:
 My favorite colors are {{#Colors}}{{Color}}{{/Colors}}
 
 Colors={
-	Color=Red
+    Color=Red
 } {
-	Color=Yellow
+    Color=Yellow
 } {
-	Color=Blue
+    Color=Blue
 } {
-	Color=Black
+    Color=Black
 } {
-	Color=Gray
+    Color=Gray
 }
 
 The output of the template would be:
