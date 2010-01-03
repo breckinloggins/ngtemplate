@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include "../lib/libuseful/src/include/platform.h"
 #include "../lib/libuseful/src/include/list.h"
 #include "../lib/libuseful/src/include/stringbuilder.h"
 #include "include/ngtemplate.h"
@@ -249,29 +250,16 @@ int ngt_set_string(ngt_dictionary* dict, const char* marker, const char* value) 
  * Returns 0 if the operations succeeded, -1 otherwise
  */
 int ngt_set_stringf(ngt_dictionary* dict, const char* marker, const char* fmt, ...) {
-    // TODO: Won't work on Windows.  Have to use _vscprintf on that platform
-    char* str;
-    int length;
+    char *str;
     va_list arglist;
-    
+
     va_start(arglist, fmt);
-    length = vsnprintf(0, 0, fmt, arglist);
+    xp_vasprintf(&str, fmt, arglist);
     va_end(arglist);
     
-    if (length <= 0)    {
-        // Could not determine the space needed for the string
-        return -1;
-    }
-    
-    str = (char*)malloc(length + 1);
     if (!str)   {
-        // Could not allocate enough memory for the string
         return -1;
     }
-    
-    va_start(arglist, fmt);
-    vsnprintf(str, length + 1, fmt, arglist);
-    va_end(arglist);
     
     return _set_string(dict, marker, str);
 }
