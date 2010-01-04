@@ -7,7 +7,7 @@ IF(NOT CMAKE_BUILD_TYPE)
       FORCE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 
-SUBDIRS(../lib/libuseful/src)
+ADD_SUBDIRECTORY(../lib/libuseful/src "${CMAKE_CURRENT_BINARY_DIR}/libuseful")
 
 SET(ngtemplate_LIB_SRCS
 	internal.h
