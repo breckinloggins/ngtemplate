@@ -5,8 +5,8 @@
 #define NGTEMPLATE_H
 
 #include <stdio.h>
-#include "../../lib/libuseful/src/include/hashtable.h"
-#include "../../lib/libuseful/src/include/stringbuilder.h"
+#include "hashtable.h"
+#include "stringbuilder.h"
 
 #define MAXMARKERLENGTH     64
 #define MAXMODIFIERLENGTH   128

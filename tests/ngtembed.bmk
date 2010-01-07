@@ -1,5 +1,5 @@
 /* Embedded Template Strings */
-const char ___tests_ngtembed_0_tst[] =
+const char test0[] =
     "{{! Started out as a copy of template_0 test input }}\n{{!#\n# The above"
     " is a special sequence recognized by the test engine to specify a dictio"
     "nary\n\n# Template Test #1\n# Test The data dictionary and all the escap"
@@ -18,13 +18,13 @@ const char ___tests_ngtembed_0_tst[] =
     "test code using the \ntemplate_string_stringf() function.\n\nThis should"
     " be an integer: {{IntValue}}";
 
-const char ___tests_ngtembed_1_tst[] =
+const char test1[] =
     "{{! This started out as a copy of template_1 test }}\n{{!#\nFoo=Bar\nThi"
     "s=That\n#!}}\n{{! This comment tests two things: }}\n\n1) The comment yo"
     "u saw above should be stripped out\n2) That Tags like {{This}} still wor"
     "k\n";
 
-const char ___tests_ngtembed_2_tst[] =
+const char test2[] =
     "{{! Started out as a copy of template_2 test }}\n{{!#\nOne=1\nTwo=2\nSec"
     "tion1={\n\tOne=\"One\"\n\tTwo=\"Two\"\n\tKeyThree=This is KeyThree\n}\nV"
     "ariable=decl\nMultiSection={\n\tOne=1.0\n\tTwo=2.0\n\tKeyThree=3.0\n\tAd"

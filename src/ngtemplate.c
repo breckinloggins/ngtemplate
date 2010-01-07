@@ -5,9 +5,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include "../lib/libuseful/src/include/platform.h"
-#include "../lib/libuseful/src/include/list.h"
-#include "../lib/libuseful/src/include/stringbuilder.h"
+#include "platform.h"
+#include "list.h"
+#include "stringbuilder.h"
 #include "include/ngtemplate.h"
 #include "internal.h"
 

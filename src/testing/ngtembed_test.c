@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-#include "ngtembed.h"
-#include "../lib/libuseful/src/test_utils.h"
+#include "../ngtembed.h"
+#include "test_utils.h"
 
 DEFINE_TEST_FUNCTION    {
     return ngt_embed(ngtembed_c_template, out, argc, argv);
