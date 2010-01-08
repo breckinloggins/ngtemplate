@@ -4,7 +4,7 @@
 #ifndef INTERNAL_H
 #define INTERNAL_H
 
-#include "include/ngtemplate.h"
+#include "ngtemplate.h"
 
 /* Parse modes */
 #define MODE_NORMAL                 0

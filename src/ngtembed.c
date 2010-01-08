@@ -4,7 +4,7 @@
 
 #include <stdlib.h>
 #include <limits.h>
-#include "include/ngtemplate.h"
+#include "ngtemplate.h"
 
 /**
  * Breaks up the input into multiple quoted lines, making sure each line doesn't go over the 80 column

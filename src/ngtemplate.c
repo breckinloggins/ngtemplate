@@ -8,7 +8,7 @@
 #include "platform.h"
 #include "list.h"
 #include "stringbuilder.h"
-#include "include/ngtemplate.h"
+#include "ngtemplate.h"
 #include "internal.h"
 
 /**

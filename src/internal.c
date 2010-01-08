@@ -4,7 +4,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "include/ngtemplate.h"
+#include "ngtemplate.h"
 #include "internal.h"
 
 /**
