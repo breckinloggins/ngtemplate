@@ -1,6 +1,8 @@
-ngtemplate - A template engine written in C designed to be syntax-compatible with Google CTemplate, released under the MIT license
+# ngtemplate 
 
-Version 0.1, so there's plenty more work to do.  Please feel free to submit an issue or a pull request for bug fixes or more features.
+A template engine written in C designed to be syntax-compatible with Google CTemplate, released under the MIT license
+
+**Version 0.1, so there's plenty more work to do.  Please feel free to submit an issue or a pull request for bug fixes or more features.**
 
 Introduction
 ------------
