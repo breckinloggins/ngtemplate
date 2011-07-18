@@ -13,20 +13,20 @@ logic inside their templates.  An example of an ngtemplate would be:
 
 When combined with the following dictionary:
 
-Name=John
-NumPosts=7
+    Name=John
+    NumPosts=7
 
 The engine will emit the following string as output:
 
     Hello, John.  You have read 7 posts on our blog today.  Thank you for visiting!
 
-To get a better idea of what you can do with ngtemplate, see Google's CTemplate howto at:
-    http://google-ctemplate.googlecode.com/svn/trunk/doc/howto.html
+To get a better idea of what you can do with ngtemplate, see [Google's CTemplate howto](http://google-ctemplate.googlecode.com/svn/trunk/doc/howto.html)
 
 Installing
 ----------
 
 To use ngtemplate:
+
     - Install CMake if you don't have it
     - Clone the git repository
     - cd ngtemplate
@@ -38,7 +38,7 @@ To use ngtemplate:
     - make
     - make test
     
-If all went well you should have libngtemplate.a and libuseful.a in your build directory
+If all went well you should have `libngtemplate.a` and `libuseful.a` in your build directory
 
 NOTE: CMake-less compilation and binary distributions will come eventually
 
@@ -46,6 +46,7 @@ Usage
 -----
 
 In a nutshell: 
+
     char* output;
     const char* tplstring = "Here, have a {{Template}}!";
     
@@ -72,23 +73,24 @@ In a nutshell:
 Differences from CTemplate
 --------------------------
 
-    - ngtemplate is a little more dynamic than CTemplate.  You are allowed to set variable_missing and 
-      modifier_missing callbacks to populate templates dynamically rather than stuffing variable
+    - ngtemplate is a little more dynamic than CTemplate.  You are allowed to set `variable_missing` and 
+      `modifier_missing` callbacks to populate templates dynamically rather than stuffing variable
       values in a data dictionary ahead of time (or some combination of the two approaches).  This
-      allows neat tricks similar to the magic you can pull off with Ruby's method_missing
-    - Unlike in CTemplate, you can have as many FOO_separator sections as you like inside a template 
+      allows neat tricks similar to the magic you can pull off with Ruby's `method_missing`
+    - Unlike in CTemplate, you can have as many `FOO_separator` sections as you like inside a template 
       and they will all be expanded in the order in which the separators are placed
     - Block scope for marker identifiers works even for template includes.  In other words, if an
       included template references a marker not in the include template's dictionary, it will be found
       if the including template has a dictionary entry with that name
-    - Includes a built-in modifier called :cstring_escape that turns newlines into \n, tabs into \t, 
+    - Includes a built-in modifier called `:cstring_escape` that turns newlines into \n, tabs into \t, 
       quotes into \", and so forth
     - Modifier semantics are a little different than they are in CTemplate:
-        - Custom modifiers don't require an x- prefix
+    
+        - Custom modifiers don't require an `x-` prefix
         - You can override the built-in modifiers
         - Syntax for modifier arguments are more consistent: for all modifiers you must start an 
-          arg list with '='.  In CTemplate the semantics for custom modifiers are different than
-          built-ins.  For backward compatibility with CTemplate, modifiers that start with x- treat
+          arg list with `=`'.  In CTemplate the semantics for custom modifiers are different than
+          built-ins.  For backward compatibility with CTemplate, modifiers that start with `x-` treat
           the first thing following the next colon as modifier arguments, just like in CTemplate
         - You can chain custom modifiers together just like built-in modifiers
 
@@ -96,13 +98,13 @@ Known Issues and Limitations
 ----------------------------
 
     - You cannot currently specify search directories for templates.  Calls to 
-      template_set_filename() need to have absolute or resolvable relative paths to the template file
+      `template_set_filename()` need to have absolute or resolvable relative paths to the template file
     - Probably not UTF-8/Unicode compatible
     - Probably susceptible to buffer overruns.  Haven't done a threat analysis yet.
-    - AUTOESCAPE is not supported, and probably won't be unless someone sends me a patch for it
-    - json_escape and javascript_escape modifiers are not supported
+    - `AUTOESCAPE` is not supported, and probably won't be unless someone sends me a patch for it
+    - `json_escape` and `javascript_escape` modifiers are not supported
     - Modifiers are not yet supported on includes
     - Per-expand-data and custom emitters are not currently supported
-    - Custom delimiters are supported (via {{= =}}), but they cannot be more than 8 characters long
+    - Custom delimiters are supported (via `{{= =}}`), but they cannot be more than 8 characters long
     - Repeatedly generating output from the same template is slower than it needs to be, because we 
       do not parse the source template into an internal data structure before processing
