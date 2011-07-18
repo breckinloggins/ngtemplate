@@ -27,16 +27,16 @@ Installing
 
 To use ngtemplate:
 
-    - Install CMake if you don't have it
-    - Clone the git repository
-    - cd ngtemplate
-    - git submodule init
-    - git submodule update
-    - mkdir build
-    - cd build
-    - cmake ../src
-    - make
-    - make test
+- Install CMake if you don't have it
+- Clone the git repository
+- cd ngtemplate
+- git submodule init
+- git submodule update
+- mkdir build
+- cd build
+- cmake ../src
+- make
+- make test
     
 If all went well you should have `libngtemplate.a` and `libuseful.a` in your build directory
 
@@ -73,38 +73,35 @@ In a nutshell:
 Differences from CTemplate
 --------------------------
 
-    - ngtemplate is a little more dynamic than CTemplate.  You are allowed to set `variable_missing` and 
+- ngtemplate is a little more dynamic than CTemplate.  You are allowed to set `variable_missing` and 
       `modifier_missing` callbacks to populate templates dynamically rather than stuffing variable
       values in a data dictionary ahead of time (or some combination of the two approaches).  This
       allows neat tricks similar to the magic you can pull off with Ruby's `method_missing`
-    - Unlike in CTemplate, you can have as many `FOO_separator` sections as you like inside a template 
+- Unlike in CTemplate, you can have as many `FOO_separator` sections as you like inside a template 
       and they will all be expanded in the order in which the separators are placed
-    - Block scope for marker identifiers works even for template includes.  In other words, if an
+- Block scope for marker identifiers works even for template includes.  In other words, if an
       included template references a marker not in the include template's dictionary, it will be found
       if the including template has a dictionary entry with that name
-    - Includes a built-in modifier called `:cstring_escape` that turns newlines into \n, tabs into \t, 
+- Includes a built-in modifier called `:cstring_escape` that turns newlines into \n, tabs into \t, 
       quotes into \", and so forth
-    - Modifier semantics are a little different than they are in CTemplate:
-    
-        - Custom modifiers don't require an `x-` prefix
-        - You can override the built-in modifiers
-        - Syntax for modifier arguments are more consistent: for all modifiers you must start an 
+- Modifier semantics are a little different than they are in CTemplate:
+    - Custom modifiers don't require an `x-` prefix
+    - You can override the built-in modifiers
+    - Syntax for modifier arguments are more consistent: for all modifiers you must start an 
           arg list with `=`'.  In CTemplate the semantics for custom modifiers are different than
           built-ins.  For backward compatibility with CTemplate, modifiers that start with `x-` treat
           the first thing following the next colon as modifier arguments, just like in CTemplate
-        - You can chain custom modifiers together just like built-in modifiers
+    - You can chain custom modifiers together just like built-in modifiers
 
 Known Issues and Limitations
 ----------------------------
 
-    - You cannot currently specify search directories for templates.  Calls to 
-      `template_set_filename()` need to have absolute or resolvable relative paths to the template file
-    - Probably not UTF-8/Unicode compatible
-    - Probably susceptible to buffer overruns.  Haven't done a threat analysis yet.
-    - `AUTOESCAPE` is not supported, and probably won't be unless someone sends me a patch for it
-    - `json_escape` and `javascript_escape` modifiers are not supported
-    - Modifiers are not yet supported on includes
-    - Per-expand-data and custom emitters are not currently supported
-    - Custom delimiters are supported (via `{{= =}}`), but they cannot be more than 8 characters long
-    - Repeatedly generating output from the same template is slower than it needs to be, because we 
-      do not parse the source template into an internal data structure before processing
+- You cannot currently specify search directories for templates.  Calls to `template_set_filename()` need to have absolute or resolvable relative paths to the template file
+- Probably not UTF-8/Unicode compatible
+- Probably susceptible to buffer overruns.  Haven't done a threat analysis yet.
+- `AUTOESCAPE` is not supported, and probably won't be unless someone sends me a patch for it
+- `json_escape` and `javascript_escape` modifiers are not supported
+- Modifiers are not yet supported on includes
+- Per-expand-data and custom emitters are not currently supported
+- Custom delimiters are supported (via `{{= =}}`), but they cannot be more than 8 characters long
+- Repeatedly generating output from the same template is slower than it needs to be, because we do not parse the source template into an internal data structure before processing
