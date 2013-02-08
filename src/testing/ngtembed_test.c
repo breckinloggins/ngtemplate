@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "../ngtembed.h"
+#include "ngtembed.h"
 #include "test_utils.h"
 
 DEFINE_TEST_FUNCTION    {

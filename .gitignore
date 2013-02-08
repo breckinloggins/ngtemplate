@@ -21,4 +21,16 @@
 *.patch
 *.gcno
 
+*_test
+
+CMakeCache.txt
+*.cmake
+Makefile
+ngtembed
+ngtembed_test
+
+
 bldosx/
+CMakeFiles/
+Testing/
+libuseful/CMakeFiles/

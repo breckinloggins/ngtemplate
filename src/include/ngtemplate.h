@@ -5,6 +5,7 @@
 #define NGTEMPLATE_H
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "hashtable.h"
 #include "stringbuilder.h"
 
