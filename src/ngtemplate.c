@@ -77,6 +77,7 @@ ngt_dictionary* ngt_dictionary_new()    {
  */
 void ngt_destroy(ngt_template* tpl) {
     _destroy_template((void*)tpl);
+    _dictionary_destroy((void*)s_global_dictionary);
 }
 
 /**
@@ -296,7 +297,7 @@ int ngt_set_include_cb(ngt_dictionary* dict, const char* marker, get_template_fn
         // Already in the hashtable
         prev_item = item;
         ht_lookup((hashtable*)dict, (void*)&prev_item);
-        free(item);
+        _dictionary_item_destroy(item);
         item = prev_item;
         
         if (!(item->type & ITEM_D_LIST))    {
@@ -377,7 +378,7 @@ int ngt_add_dictionary(ngt_dictionary* dict, const char* marker, ngt_dictionary*
         // Already in the table, add to it
         prev_item = item;
         ht_lookup((hashtable*)dict, (void*)&prev_item);
-        free(item);
+        _dictionary_item_destroy(item);
         item = prev_item;
         
         if (!(item->type & ITEM_D_LIST))    {

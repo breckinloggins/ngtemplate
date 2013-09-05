@@ -32,6 +32,7 @@ void _dictionary_item_destroy(void *data)   {
         free(d->val.string_value);
     } else if (d->type & ITEM_D_LIST && d->val.d_list_value != 0) {
         list_destroy(d->val.d_list_value);
+        free(d->val.d_list_value);
     } 
     
     if (d->type == ITEM_INCLUDE)    {
@@ -173,7 +174,7 @@ int _set_string(ngt_dictionary* dict, const char* marker, char* value)  {
         // Already in the table, replace
         prev_item = item;
         ht_remove((hashtable*)dict, (void *)&prev_item);
-        _dictionary_destroy((void*)prev_item);
+        _dictionary_item_destroy((void*)prev_item);
         
         ht_insert((hashtable*)dict, item);
     }
