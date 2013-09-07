@@ -15,11 +15,15 @@
 #define NGT_SECTION_VISIBLE 1
 #define NGT_SECTION_HIDDEN  0
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 /* Pointer to a function that will return a pointer to a template string given its name */ 
 typedef char* (*get_template_fn)(const char* name);
 
 /* Pointer to a function that will clean up the template data given the data and its name */ 
-typedef void (*cleanup_template_fn)(const char* name, char* template);
+typedef void (*cleanup_template_fn)(const char* name, char* tmpl);
 
 /** 
  * Pointer to a function that will be called to modify the output of a template process for a marker
@@ -62,7 +66,7 @@ typedef struct ngt_template_tag {
     
     hashtable modifiers;
     
-    char*   template;
+    char*   tmpl;
     
     delimiter start_delimiter;                  /* Characters that signify start of a marker */
     delimiter end_delimiter;                    /* Characters that signify end of a marker */
@@ -240,4 +244,7 @@ ngt_dictionary* ngt_get_global_dictionary();
  */
 void ngt_print_dictionary(ngt_dictionary* dict, FILE* out);
 
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 #endif // NGTEMPLATE_H

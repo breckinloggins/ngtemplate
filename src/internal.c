@@ -32,6 +32,7 @@ void _dictionary_item_destroy(void *data)   {
         free(d->val.string_value);
     } else if (d->type & ITEM_D_LIST && d->val.d_list_value != 0) {
         list_destroy(d->val.d_list_value);
+        free(d->val.d_list_value);
     } 
     
     if (d->type == ITEM_INCLUDE)    {
@@ -108,20 +109,26 @@ char* _get_template_from_file(FILE* fd) {
     
     fseek(fd, 0, SEEK_END);
     length = ftell(fd);
-    if (!length)    {
-        close(fd);
+    if (!length) {
         return 0;
     }
+    
     rewind(fd);
     
-    // TODO: Do this with block reads so it's faster
-    i = 0;
+    int pos = 0;
     contents = (char*)malloc(length+1);
-    while ((ch = fgetc(fd)) != EOF) {
-        contents[i++] = ch;
+    while(pos < length) {
+        int rd = length - pos > 4096 ? 4096 : length - pos;
+        
+        if(fread(contents+pos, rd, 1, fd) != 1) {
+            free(contents);
+            return 0;
+        }
+        
+        pos += rd;
     }
-    close(fd);
     
+    contents[length] = '\0';
     return contents;
 }
 
@@ -173,7 +180,7 @@ int _set_string(ngt_dictionary* dict, const char* marker, char* value)  {
         // Already in the table, replace
         prev_item = item;
         ht_remove((hashtable*)dict, (void *)&prev_item);
-        _dictionary_destroy((void*)prev_item);
+        _dictionary_item_destroy((void*)prev_item);
         
         ht_insert((hashtable*)dict, item);
     }
@@ -494,7 +501,7 @@ void _process_set_delimiter(_parse_context* ctx)    {
  */
 void _process_modifiers(const char* marker, const char* modifiers, const char* value, _parse_context* ctx)  {
     int applied_modifier;
-    stringbuilder* sb;
+    stringbuilder* sb = 0;
     
     applied_modifier = 0;   
     if (ctx->mode & MODE_MARKER_MODIFIER)   {
@@ -599,6 +606,10 @@ void _process_modifiers(const char* marker, const char* modifiers, const char* v
         sb_append_str(ctx->out_sb, value);
     } else {
         sb_append_str(ctx->out_sb, sb_cstring(sb));
+    }
+    
+    if(sb != 0) {
+        sb_destroy(sb, 1);
     }
 }
 
