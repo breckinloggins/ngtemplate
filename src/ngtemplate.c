@@ -77,7 +77,6 @@ ngt_dictionary* ngt_dictionary_new()    {
  */
 void ngt_destroy(ngt_template* tpl) {
     _destroy_template((void*)tpl);
-    _dictionary_destroy((void*)s_global_dictionary);
 }
 
 /**
@@ -107,11 +106,11 @@ int ngt_load_from_file(ngt_template* tpl, FILE* fp) {
         return -1;
     }
     
-    if (tpl->template)  {
-        free(tpl->template);
+    if (tpl->tmpl)  {
+        free(tpl->tmpl);
     }
     
-    tpl->template = template;
+    tpl->tmpl = template;
     return 0;
 }
 
@@ -128,11 +127,11 @@ int ngt_load_from_filename(ngt_template* tpl, const char* filename) {
         return -1;
     }
     
-    if (tpl->template)  {
-        free(tpl->template);
+    if (tpl->tmpl)  {
+        free(tpl->tmpl);
     }
     
-    tpl->template = template;
+    tpl->tmpl = template;
     return 0;
 }
 
@@ -423,7 +422,7 @@ int ngt_expand(ngt_template* tpl, char** result)    {
     context.active_dictionary = tpl->dictionary;
     _copy_delimiter(&context.active_start_delimiter, &tpl->start_delimiter);
     _copy_delimiter(&context.active_end_delimiter, &tpl->end_delimiter);
-    context.in_ptr = (char*)tpl->template;
+    context.in_ptr = (char*)tpl->tmpl;
     context.template_line = 1;
     
     context.out_sb = sb_new_with_size(1024);

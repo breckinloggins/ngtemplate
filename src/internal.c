@@ -109,20 +109,26 @@ char* _get_template_from_file(FILE* fd) {
     
     fseek(fd, 0, SEEK_END);
     length = ftell(fd);
-    if (!length)    {
-        close(fd);
+    if (!length) {
         return 0;
     }
+    
     rewind(fd);
     
-    // TODO: Do this with block reads so it's faster
-    i = 0;
+    int pos = 0;
     contents = (char*)malloc(length+1);
-    while ((ch = fgetc(fd)) != EOF) {
-        contents[i++] = ch;
+    while(pos < length) {
+        int rd = length - pos > 4096 ? 4096 : length - pos;
+        
+        if(fread(contents+pos, rd, 1, fd) != 1) {
+            free(contents);
+            return 0;
+        }
+        
+        pos += rd;
     }
-    close(fd);
     
+    contents[length] = '\0';
     return contents;
 }
 
@@ -495,7 +501,7 @@ void _process_set_delimiter(_parse_context* ctx)    {
  */
 void _process_modifiers(const char* marker, const char* modifiers, const char* value, _parse_context* ctx)  {
     int applied_modifier;
-    stringbuilder* sb;
+    stringbuilder* sb = 0;
     
     applied_modifier = 0;   
     if (ctx->mode & MODE_MARKER_MODIFIER)   {
@@ -600,6 +606,10 @@ void _process_modifiers(const char* marker, const char* modifiers, const char* v
         sb_append_str(ctx->out_sb, value);
     } else {
         sb_append_str(ctx->out_sb, sb_cstring(sb));
+    }
+    
+    if(sb != 0) {
+        sb_destroy(sb, 1);
     }
 }
 
