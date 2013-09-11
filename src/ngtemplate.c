@@ -106,11 +106,11 @@ int ngt_load_from_file(ngt_template* tpl, FILE* fp) {
         return -1;
     }
     
-    if (tpl->template)  {
-        free(tpl->template);
+    if (tpl->tmpl)  {
+        free(tpl->tmpl);
     }
     
-    tpl->template = template;
+    tpl->tmpl = template;
     return 0;
 }
 
@@ -127,11 +127,11 @@ int ngt_load_from_filename(ngt_template* tpl, const char* filename) {
         return -1;
     }
     
-    if (tpl->template)  {
-        free(tpl->template);
+    if (tpl->tmpl)  {
+        free(tpl->tmpl);
     }
     
-    tpl->template = template;
+    tpl->tmpl = template;
     return 0;
 }
 
@@ -296,7 +296,7 @@ int ngt_set_include_cb(ngt_dictionary* dict, const char* marker, get_template_fn
         // Already in the hashtable
         prev_item = item;
         ht_lookup((hashtable*)dict, (void*)&prev_item);
-        free(item);
+        _dictionary_item_destroy(item);
         item = prev_item;
         
         if (!(item->type & ITEM_D_LIST))    {
@@ -377,7 +377,7 @@ int ngt_add_dictionary(ngt_dictionary* dict, const char* marker, ngt_dictionary*
         // Already in the table, add to it
         prev_item = item;
         ht_lookup((hashtable*)dict, (void*)&prev_item);
-        free(item);
+        _dictionary_item_destroy(item);
         item = prev_item;
         
         if (!(item->type & ITEM_D_LIST))    {
@@ -422,7 +422,7 @@ int ngt_expand(ngt_template* tpl, char** result)    {
     context.active_dictionary = tpl->dictionary;
     _copy_delimiter(&context.active_start_delimiter, &tpl->start_delimiter);
     _copy_delimiter(&context.active_end_delimiter, &tpl->end_delimiter);
-    context.in_ptr = (char*)tpl->template;
+    context.in_ptr = (char*)tpl->tmpl;
     context.template_line = 1;
     
     context.out_sb = sb_new_with_size(1024);
