@@ -50,7 +50,7 @@ int ngt_embed(const char* code_template, FILE* out, int argc, char** argv)  {
     ngt_add_modifier(tpl, "breakup_lines", _breakup_lines_modifier_cb);
     ngt_set_delimiters(tpl, "@", "@");
     ngt_set_dictionary(tpl, dict);
-    tpl->template = (char*)code_template;
+    tpl->tmpl = (char*)code_template;
     
     for (i = 1; i < argc; i++)  {
         char* p;
