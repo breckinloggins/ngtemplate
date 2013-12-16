@@ -235,7 +235,7 @@ DEFINE_TEST_FUNCTION    {
     line = 1;
     
     ngt_load_from_file(tpl, in);
-    read_in_dictionary(dict, tpl->template, &line, 0);
+    read_in_dictionary(dict, tpl->tmpl, &line, 0);
     ngt_set_include_cb(dict, "Callback_Template", get_template_cb, cleanup_template_cb);
         
     ngt_add_modifier(tpl, "modifier", modifier_cb);
